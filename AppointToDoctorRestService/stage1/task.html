@@ -1,0 +1,76 @@
+<html>
+
+<h2>Description</h2>
+
+<p>In our hospital, there are more and more patients. The receptionist used to write down the visits on sticky notes. Unfortunately, the sticky notes get lost or taken away by doctors. The hospital director thinks that at the beginning a simple program for the receptionist will be sufficient.
+  Let's make our program with the help of a REST service. In this stage, you need to create 3 endpoints that will return the information about appointments in JSON format.
+</p>
+
+<h2>  Objectives </h2>
+<p>Implement the following endpoints:  that handles GET requests and returns the information about the movie theatre.</p>
+
+<p></p>
+
+<ul>
+<li>	/setAppointment that handles POST requests to create new appointment and returns the information about the appointment.</li>
+
+<li>	/deleteAppointment that handles DELETE requests to delete appointment and returns the information about the appointment deleted.</li>
+
+<li>	/appointments that handles GET requests and returns the information about all appointments.</li><br>
+
+  <p>The response should contain doctor name, patient name, date in the format "yyyy-MM-dd HH:mm" and appointment id number. The response is a JSON object and has the following format:</p>
+
+  <p>{
+    "idApp": 1,
+    "doctorName": "Pamela Upperson ",
+    "patientName": "Phill good",
+    "date": "2021-12-01 22:00"
+    }
+  </p>
+
+  <h2> Examples </h2>
+  <p>Example 1: a POST /setAppointment request</p>
+  <p>Response body:</p>
+  <p>{
+    "idApp": 1,
+    "doctorName": "Pamela Upperson ",
+    "patientName": "John Galt",
+    "date": "2021-12-01 22:00"
+    }
+  </p>
+  <p>Example 2: a DELETE  /deleteAppointment ?id=1  request</p>
+  <p>Response body with deleted appointment information:</p>
+  <p>{
+    "idApp": 1,
+    "doctorName": "Pamela Upperson",
+    "patientName": "John Galt",
+    "date": "2021-12-01 22:00"
+    }
+  </p>
+  <p>Example 3: a DELETE  /deleteAppointment?id=1    request</p>
+  <p>Response body if appointment does not exist with such id number:</p>
+  <p>{
+    "error": "The appointment was already cancelled or does not exist!"
+    }
+  </p>
+  <p>Example 4: a GET  /appointments    request</p>
+  <p>Response body with all created  appointments:</p>
+  <p>{
+    "1": {
+    "idApp": 2,
+    "doctorName": "Pamela Upperson",
+    "patientName": "John Galt",
+    "date": "2021-12-01 12:00"
+    },
+    "2": {
+    "idApp": 3,
+    "doctorName": "Lea Wong",
+    "patientName": "Indi Grimes",
+    "date": "2021-11-15 11:00"
+    }
+    }
+  </p>
+
+
+</ul>
+</html>
