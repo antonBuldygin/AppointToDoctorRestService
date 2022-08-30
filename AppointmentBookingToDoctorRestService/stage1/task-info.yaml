@@ -1,6 +1,0 @@
-type: edu
-files:
-- name: src/AppointmentBookingToDoctorRestService/Main.java
-  visible: true
-- name: test/AppointmentBookingToDoctorRestServiceTest.java
-  visible: false

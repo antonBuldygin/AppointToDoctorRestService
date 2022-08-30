@@ -1,5 +1,5 @@
 # Project exclude paths
 /.gradle/
-/AppointmentBookingToDoctorRestService/stage1/build/
-/AppointmentBookingToDoctorRestService/stage1/out/
-/AppointmentBookingToDoctorRestService/stage1/out/production/classes/
+/AppointToDoctorRestService/stage1/build/
+/AppointToDoctorRestService/stage1/out/
+/AppointToDoctorRestService/stage1/out/production/classes/

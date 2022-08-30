@@ -1,76 +1,189 @@
-<html>
-
 <h2>Description</h2>
 
-<p>In our hospital, there are more and more patients. The receptionist used to write down the visits on sticky notes. Unfortunately, the sticky notes get lost or taken away by doctors. The hospital director thinks that at the beginning a simple program for the receptionist will be sufficient.
-  Let's make our program with the help of a REST service. In this stage, you need to create 3 endpoints that will return the information about appointments in JSON format.
-</p>
+<p>In our hospital, there are more and more patients. The receptionist used to write down the visits on sticky notes. Unfortunately, the sticky notes get lost or taken away by doctors. The hospital director thinks that at the beginning a simple program for the receptionist will be sufficient.</p>
 
-<h2>  Objectives </h2>
-<p>Implement the following endpoints:  that handles GET requests and returns the information about the movie theatre.</p>
+<p>Let&#39;s make our program with the help of a REST service. To create&nbsp;REST service we will create Spring project using Spring Boot .&nbsp;</p>
 
-<p></p>
+<p>The following dependencies should be pasted to build.gradle file (in our study project they are already included):&nbsp;</p>
 
-<ul>
-<li>	/setAppointment that handles POST requests to create new appointment and returns the information about the appointment.</li>
+<p>spring-boot-starter -&nbsp;Core starter, including auto-configuration support, logging and YAML;</p>
 
-<li>	/deleteAppointment that handles DELETE requests to delete appointment and returns the information about the appointment deleted.</li>
+<p>spring-boot-starter-web - Starter for building web, including RESTful, applications using Spring MVC. Uses Tomcat as the default embedded container</p>
 
-<li>	/appointments that handles GET requests and returns the information about all appointments.</li><br>
+<p>In this stage, you need to create 3 endpoints that will return the information about appointments in JSON format. At this stage to store information about appointments you&nbsp; can use&nbsp;interface Map&lt;K,V&gt;. In next stages we will store inforamtion about appointments&nbsp;in the database.&nbsp;</p>
 
-  <p>The response should contain doctor name, patient name, date in the format "yyyy-MM-dd HH:mm" and appointment id number. The response is a JSON object and has the following format:</p>
+<h2>Objectives</h2>
 
-  <p>{
-    "idApp": 1,
-    "doctorName": "Pamela Upperson ",
-    "patientName": "Phill good",
-    "date": "2021-12-01 22:00"
-    }
-  </p>
+<p>Implement the following endpoints:&nbsp;&nbsp;</p>
 
-  <h2> Examples </h2>
-  <p>Example 1: a POST /setAppointment request</p>
-  <p>Response body:</p>
-  <p>{
-    "idApp": 1,
-    "doctorName": "Pamela Upperson ",
-    "patientName": "John Galt",
-    "date": "2021-12-01 22:00"
-    }
-  </p>
-  <p>Example 2: a DELETE  /deleteAppointment ?id=1  request</p>
-  <p>Response body with deleted appointment information:</p>
-  <p>{
-    "idApp": 1,
-    "doctorName": "Pamela Upperson",
-    "patientName": "John Galt",
-    "date": "2021-12-01 22:00"
-    }
-  </p>
-  <p>Example 3: a DELETE  /deleteAppointment?id=1    request</p>
-  <p>Response body if appointment does not exist with such id number:</p>
-  <p>{
-    "error": "The appointment was already cancelled or does not exist!"
-    }
-  </p>
-  <p>Example 4: a GET  /appointments    request</p>
-  <p>Response body with all created  appointments:</p>
-  <p>{
+<p>1)&nbsp; &nbsp;Implement&nbsp; <code>/setAppointment</code>&nbsp; endpoint that handles POST requests to create new appointment and returns information about the appointment.</p>
+
+<p>A request should contain the following body:</p>
+
+<pre>
+<code>{
+    "doctorName": "Name of the doctor",
+    "patientName": "Name of the patient",
+    "date": "date of visite : 2021-12-01 22:00"
+
+}</code></pre>
+
+<p>Take these variables and store them for the appointment.&nbsp;</p>
+
+<p>Response body should be JSON object&nbsp; as following example:</p>
+
+<p>{ &quot;idApp&quot;: 1, &quot;doctorName&quot;: &quot;Pamela Upperson &quot;, &quot;patientName&quot;: &quot;John Galt&quot;, &quot;date&quot;: &quot;2021-12-01 22:00&quot; }</p>
+
+<p>where&nbsp;&quot;idApp&quot; is unique id assigned to the appointment in Number format,</p>
+
+<p>doctorName is name of the doctor which was in the request body and stored in the appointment with mentioned idApp in String format;</p>
+
+<p>patientName&nbsp; is name of the patient which was in the request body and stored in the appointment with mentioned idApp in String format; date&nbsp; is the date of visit&nbsp; which was in the request body and stored in the appointment with mentioned idApp in String format;</p>
+
+<p>The endpoint should return&nbsp;Response Status Code 200;</p>
+
+<p>2)&nbsp;&nbsp;&nbsp; Implement <code>/deleteAppointment/?id={N}</code>&nbsp; endpoint that handles DELETE requests to delete appointment and returns the information about the appointment deleted.</p>
+
+<p>To delete an appointment please use&nbsp;id&nbsp; assigned to the appointement when it was created. Use the id as a request parameter.</p>
+
+<p>If appointment with requested id exists , delete the appointment and&nbsp;&nbsp;return&nbsp;Response Status Code 200;</p>
+
+<p>Response body should be JSON object&nbsp; as following example:</p>
+
+<p>{ &quot;idApp&quot;: 1, &quot;doctorName&quot;: &quot;Pamela Upperson &quot;, &quot;patientName&quot;: &quot;John Galt&quot;, &quot;date&quot;: &quot;2021-12-01 22:00&quot; }</p>
+
+<p>where&nbsp;&quot;idApp&quot; is unique id assigned to the appointment in Number format,</p>
+
+<p>doctorName is name of the doctor which was in the request body and stored in the appointment with mentioned idApp in String format;</p>
+
+<p>patientName&nbsp; is name of the patient which was in the request body and stored in the appointment with mentioned idApp in String format; date&nbsp; is the date of visit&nbsp; which was in the request body and stored in the appointment with mentioned idApp in String format;</p>
+
+<p>if appointment&nbsp; with&nbsp;requested id&nbsp; does not exists or was deleted then return error message&nbsp;&quot;The appointment was already cancelled or does not exist!&quot; and&nbsp;Response Status Code 400;</p>
+
+<p>3)&nbsp;&nbsp;&nbsp; Implement <code>/appointments</code> endpoint that handles GET requests and returns the information about all appointments. The endpoint do not accept any body or parameters and return respons with&nbsp;<em>all created &nbsp;appointments.</em></p>
+
+<p>The endpoint should return&nbsp;Response Status Code 200;</p>
+
+<p>The response as a JSON objects should contain unique number in String format as a name and value&nbsp; a JSON object which contains the following&nbsp;name/value pairs:&nbsp;</p>
+
+<p>&nbsp;&quot;idApp&quot;:&nbsp; appointment number in Number format,</p>
+
+<p>&nbsp; &quot;doctorName&quot;:&nbsp;doctor name taken from the appoinment in String format,</p>
+
+<p>&nbsp; &nbsp;&quot;patientName&quot;:&nbsp;patient name taken from the appoinment in String format,</p>
+
+<p>&nbsp; &quot;date&quot;: date of appointment in&nbsp; the format &quot;yyyy-MM-dd HH:mm&quot;</p>
+
+<p>&nbsp;Example of the response as a JSON object :</p>
+
+<pre>
+<code>
+{
     "1": {
-    "idApp": 2,
-    "doctorName": "Pamela Upperson",
-    "patientName": "John Galt",
-    "date": "2021-12-01 12:00"
+        "idApp": 1,
+        "doctorName": "Pamela Upperson",
+        "patientName": "John Galt",
+        "date": "2021-12-01 11:00"
     },
     "2": {
-    "idApp": 3,
-    "doctorName": "Lea Wong",
-    "patientName": "Indi Grimes",
-    "date": "2021-11-15 11:00"
+        "idApp": 2,
+        "doctorName": "Pamela Upperson",
+        "patientName": "Phill good",
+        "date": "2021-12-01 12:00"
     }
+    "3": {
+        "idApp": 3,
+        "doctorName": "Phill good",
+        "patientName": "Phill good",
+        "date": "2021-12-01 13:00"
     }
-  </p>
+}
+</code></pre>
 
+<p>&nbsp;</p>
 
-</ul>
-</html>
+<p>Request and response entity-header <code>Content-Type </code>&nbsp;of all the API endpoints should be equal to&nbsp;<code>application/json&nbsp;</code>&nbsp;.</p>
+
+<h2>Examples</h2>
+
+<p><strong>Example 1:</strong><em>&nbsp;a&nbsp;</em><code>POST /setAppointment </code><em>request</em><br />
+  <em>Response body:</em></p>
+
+<p>{</p>
+
+<p>&nbsp;&nbsp;&nbsp; &quot;idApp&quot;: 1,</p>
+
+<p>&nbsp;&nbsp;&nbsp; &quot;doctorName&quot;: &quot;Pamela Upperson&quot;,</p>
+
+<p>&nbsp;&nbsp;&nbsp; &quot;patientName&quot;: &quot;John Galt&quot;,</p>
+
+<p>&nbsp;&nbsp;&nbsp; &quot;date&quot;: &quot;2021-12-01 22:00&quot;</p>
+
+<p>}</p>
+
+<p>&nbsp;</p>
+
+<p><strong>Example 2:</strong><em>&nbsp;a&nbsp;</em><code>DELETE &nbsp;/deleteAppointmen?id=1</code><em>request</em><br />
+  <em>Response body with deleted appointment information:</em></p>
+
+<p><code>{</code></p>
+
+<p><code>&nbsp;&nbsp;&nbsp; &quot;idApp&quot;: 1,</code></p>
+
+<p><code>&nbsp;&nbsp;&nbsp; &quot;doctorName&quot;: &quot;Pamela Upperson&quot;,</code></p>
+
+<p><code>&nbsp;&nbsp;&nbsp; &quot;patientName&quot;: &quot;John Galt&quot;,</code></p>
+
+<p><code>&nbsp;&nbsp;&nbsp; &quot;date&quot;: &quot;2021-12-01 22:00&quot;</code></p>
+
+<p><code>}</code></p>
+
+<p>&nbsp;</p>
+
+<p><strong>Example 3:</strong><em>&nbsp;a&nbsp;</em><code>DELETE &nbsp;/deleteAppointmen?id=1</code><em>request</em><br />
+  <em>Response body if appointment does not exist with such id number:</em></p>
+
+<p><em>&nbsp;</em></p>
+
+<p><code>{</code></p>
+
+<p><code>&nbsp;&nbsp;&nbsp;&nbsp;&quot;error&quot;:&nbsp;&quot;The&nbsp;appointment&nbsp;was&nbsp;already&nbsp;cancelled&nbsp;or&nbsp;does&nbsp;not&nbsp;exist!&quot;</code></p>
+
+<p><code>}</code></p>
+
+<p><em>&nbsp;</em></p>
+
+<p><strong>Example 4:</strong><em>&nbsp;a&nbsp;</em><code>GET &nbsp;/appointments &nbsp;&nbsp;&nbsp;</code><em>request</em><br />
+  <em>Response body with all created &nbsp;appointments:</em></p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p><code>{</code></p>
+
+<p><code>&nbsp;&nbsp;&nbsp;&nbsp;&quot;1&quot;:&nbsp;{</code></p>
+
+<p><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;idApp&quot;:&nbsp;2,</code></p>
+
+<p><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;doctorName&quot;:&nbsp;&quot;Pamela Upperson&quot;,</code></p>
+
+<p><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;patientName&quot;:&nbsp;&quot;John Galt&quot;,</code></p>
+
+<p><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;date&quot;:&nbsp;&quot;2021-12-01&nbsp;12:00&quot;</code></p>
+
+<p><code>&nbsp;&nbsp;&nbsp;&nbsp;},</code></p>
+
+<p><code>&nbsp;&nbsp;&nbsp;&nbsp;&quot;2&quot;:&nbsp;{</code></p>
+
+<p><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;idApp&quot;:&nbsp;3,</code></p>
+
+<p><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;doctorName&quot;:&nbsp;&quot;Lea Wong&quot;,</code></p>
+
+<p><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;patientName&quot;:&nbsp;&quot;Indi Grimes&quot;,</code></p>
+
+<p><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;date&quot;:&nbsp;&quot;2021-11-15&nbsp;11:00&quot;</code></p>
+
+<p><code>&nbsp;&nbsp;&nbsp;&nbsp;}</code></p>
+
+<p><code>}</code></p>

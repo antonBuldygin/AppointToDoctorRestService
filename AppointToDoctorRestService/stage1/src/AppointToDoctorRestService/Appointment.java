@@ -1,4 +1,4 @@
-package AppointmentBookingToDoctorRestService;
+package AppointToDoctorRestService;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
