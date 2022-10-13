@@ -12,7 +12,7 @@ public class ServiceImpl implements Service {
 
     @Override
     public Appointment setAppointment(Appointment appointment) {
-        Appointment newApp = new Appointment(appointment.getDoctorName(), appointment.getPatientName(), appointment.getDate());
+//        Appointment newApp = new Appointment(appointment.getDoctorName(), appointment.getPatientName(), appointment.getDate());
         appId++;
         appointments.put((long) appId, appointment);
         return appointment;
@@ -25,7 +25,7 @@ public class ServiceImpl implements Service {
 
     @Override
     public Appointment deleteAppointment(String id) {
-        Appointment app = new Appointment();
+//        Appointment app = new Appointment();
         Optional<Appointment> optionalIsbn = appointments.entrySet().stream()
                 .filter(e -> (Long.parseLong(id))==(e.getKey()))
                 .map(Map.Entry::getValue)
@@ -33,8 +33,8 @@ public class ServiceImpl implements Service {
         if (optionalIsbn.isPresent()) {
 
             appointments.remove(Long.parseLong(id));
-            return app = optionalIsbn.get();
+            return optionalIsbn.get();
         }
-        return  app = new Appointment("null","null",null);
+        return   new Appointment("null","null",null);
     }
 }
