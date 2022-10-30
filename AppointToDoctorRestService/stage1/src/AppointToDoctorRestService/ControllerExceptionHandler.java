@@ -33,8 +33,8 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
         body.put("timestamp", LocalDateTime.now());
         body.put("status", status.value());
         body.put("error", "Bad Request");
-        body.put("message", "Validation failed");
-        body.put("path", "api/auth/signup");
+//        body.put("message", "Validation failed");
+//        body.put("path", "api/auth/signup");
         return new ResponseEntity<>(body, headers, status);
     }
 

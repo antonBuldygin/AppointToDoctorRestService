@@ -7,8 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
-
-import java.util.*;
+import java.text.ParseException;
 
 @RestController
 public class AppBookingController {
@@ -22,34 +21,30 @@ public class AppBookingController {
 
     @GetMapping("/appointments")
     public ResponseEntity<?> getAppointments() {
-        if (appointment.showAppointment().size() == 0) {
-            return new ResponseEntity<>("appointment.showAppointment()", HttpStatus.NO_CONTENT);
+        if (appointment.showListOfAppoinemnts().size() == 0) {
+            return new ResponseEntity<>("", HttpStatus.NO_CONTENT);
         }
-        return new ResponseEntity<>(appointment.showAppointment(), HttpStatus.OK);
+        return new ResponseEntity<>(appointment.showListOfAppoinemnts(), HttpStatus.OK);
     }
 
     @DeleteMapping("/deleteAppointment")
-    public ResponseEntity<?> deleteAppointment(@RequestParam(required = false) String id) {
+    public ResponseEntity<?> deleteAppointment(@RequestParam(required = false) String id) throws ParseException {
         Appointment res = appointment.deleteAppointment(id);
+
         try {
-            res.getDoctorName().equals("null");
-            res.getPatientName().equals("null");
+            res.getDoctor().equals("null");
+            res.getPatient().equals("null");
         } catch (NullPointerException e) {
             System.out.println(e.getMessage());
             return new ResponseEntity<>(new ErorrMessage("The appointment does not exist or one of the fields is null!"),
                     HttpStatus.CONFLICT);
         }
 
-        if (res.getDoctorName().equals("null") && res.getPatientName().equals("null")) {
+        if (res.getDoctor().equals("null") && res.getPatient().equals("null")) {
             return new ResponseEntity<>(new ErorrMessage("The appointment does not exist or was already cancelled"),
                     HttpStatus.BAD_REQUEST);
         }
-        try {
-            res.getDate().equals("null");
-        } catch (NullPointerException e) {
-            System.out.println(e.getMessage());
-            return new ResponseEntity<>(new ErorrMessage("The date field is null!"), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
 
@@ -60,6 +55,14 @@ public class AppBookingController {
         if (year == 0) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Most probably Date is empty. ");
         }
+
+        if (app.getDoctor().trim().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "doctor field is absent!");
+        }
+        if (app.getPatient().trim().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "patient field is absent!");
+        }
+
         Appointment res = new Appointment();
         try {
             res = appointment.setAppointment(app);

@@ -2,15 +2,13 @@ package AppointToDoctorRestService;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 
@@ -19,17 +17,17 @@ public class Appointment implements Comparable {
     private long idApp;
     @NotEmpty
     @NotNull
-    private String doctorName;
+    private String doctor;
 
     @NotEmpty
     @NotNull
-    private String patientName;
+    private String patient;
 
 
     @NotNull
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
 
-    private Date date;
+    private LocalDate date;
 
 
     public long getIdApp() {
@@ -41,42 +39,42 @@ public class Appointment implements Comparable {
     }
 
 
-    public String getDoctorName() {
-        return doctorName;
+    public String getDoctor() {
+        return doctor;
     }
 
-    public void setDoctorName(String doctorName) {
-        this.doctorName = doctorName;
+    public void setDoctor(String doctor) {
+        this.doctor = doctor;
     }
 
-    public String getPatientName() {
-        return patientName;
+    public String getPatient() {
+        return patient;
     }
 
-    public void setPatientName(String patientName) {
-        this.patientName = patientName;
+    public void setPatient(String patient) {
+        this.patient = patient;
     }
 
 
-    public Date getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
 
-    public void setDate(Date date) throws ParseException {
+    public void setDate(LocalDate date) throws ParseException {
         if(date==null){
-            date =new Date();
-            date.setYear(0000);
+            date = LocalDate.ofYearDay(0000,00);;
+
 
         }
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd LLLL yyyy");
 
-        this.date = formatter.parse(formatter.format(date));
+        this.date = LocalDate.parse(date.format(DateTimeFormatter.ofPattern("dd LLLL yyyy")),formatter);
     }
 
-    public Appointment(String doctorName, String patientName, Date date) {
-        this.doctorName = doctorName;
-        this.patientName = patientName;
+    public Appointment(String doctor, String patient, LocalDate date) {
+        this.doctor = doctor;
+        this.patient = patient;
         this.date = date;
     }
 
@@ -87,8 +85,8 @@ public class Appointment implements Comparable {
     public String toString() {
         return "Appointment{" +
 
-                " Doctor=" + doctorName +
-                ", Patient=" + patientName +
+                " Doctor=" + doctor +
+                ", Patient=" + patient +
                 ", Date =" + date +
                 '}';
     }

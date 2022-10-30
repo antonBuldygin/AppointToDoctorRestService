@@ -17,7 +17,7 @@ public class Appoint {
 
     @JoinColumn(name = "doctor_id")
     @ManyToOne(fetch = FetchType.EAGER)
-        @NotNull
+    @NotNull
     private Doctor doctor;
 
     @ManyToOne(fetch = FetchType.EAGER)

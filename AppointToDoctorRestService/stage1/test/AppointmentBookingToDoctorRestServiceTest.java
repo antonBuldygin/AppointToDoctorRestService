@@ -2,17 +2,19 @@ import AppointToDoctorRestService.Main;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.JsonElement;
+import com.google.gson.*;
 import org.hyperskill.hstest.dynamic.DynamicTest;
 import org.hyperskill.hstest.dynamic.input.DynamicTesting;
 import org.hyperskill.hstest.mocks.web.response.HttpResponse;
 import org.hyperskill.hstest.stage.SpringTest;
 import org.hyperskill.hstest.testcase.CheckResult;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static java.util.regex.Pattern.compile;
+import static org.hyperskill.hstest.common.JsonUtils.getJson;
 import static org.hyperskill.hstest.testing.expect.Expectation.expect;
 import static org.hyperskill.hstest.testing.expect.json.JsonChecker.*;
 
@@ -42,6 +44,7 @@ class RequestForTest {
 
     }
 
+
     public RequestForTest setProps(String key, Object value) {
         properties.put(key, value);
         return this;
@@ -55,36 +58,85 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
         super(Main.class, 28852);
 
     }
-    private  final String setAppointment = "/setAppointment";
-    private  final String appointments = "/appointments";
-    private  final String deleteAppointment = "/deleteAppointment?id=";
-    private  final String newDoctor = "/newDoctor";
 
-    private final String newUser = new RequestForTest().setProps("doctor", "Phill good")
+    private String convert(String[] trs) {
+        JsonArray jsonArray = new JsonArray();
+        for (String tr : trs) {
+            JsonElement jsonObject = JsonParser.parseString(tr);
+            jsonArray.add(jsonObject);
+        }
+        return jsonArray.toString();
+    }
+
+    //Endpoints list
+    private final String setAppointment = "/setAppointment";
+    private final String appointments = "/appointments";
+    private final String deleteAppointment = "/deleteAppointment?id=";
+
+    // Doctors' names
+    private final String phillGood = "Phill good";
+    private final String leaWong = "Lea Wong";
+    private final String pamelaUpperson = "Pamela Upperson";
+    private final String doctorHouse = "Dr. House";
+
+
+    //List and maps for corrent information storage about doctors, appointments, available days, statistics
+    List<Long> ids = new ArrayList<>();
+    List<Long> idsForAppointments = new ArrayList<>();
+
+    List<String> appointmentsCorrectJson = new ArrayList<>();
+
+
+    LocalDateTime date = LocalDateTime.now();
+    DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+    private final String leaWongApp1 = new RequestForTest().setProps("doctor", leaWong)
             .setProps("patient", "Ay Bolit")
-            .setProps("date", "2021-12-01 22:00").toJson();
+            .setProps("date", dateTimeFormatter.format(date.plusDays(1))).toJson();
 
-    private final String newUser1 = new RequestForTest().setProps("doctorName", "Pamela Upperson")
-            .setProps("patientName", "John Galt")
-            .setProps("date", "2021-12-01 22:00").toJson();
-    private final String newUser2 = new RequestForTest().setProps("doctorName", "Lea Wong")
-            .setProps("patientName", "Indi Grimes")
-            .setProps("date", "2021-12-01 22:00").toJson();
+    private final String pamelaUppersonApp1 = new RequestForTest().setProps("doctor", "Pamela Upperson")
+            .setProps("patient", "John Galt")
+            .setProps("date", dateTimeFormatter.format(date.plusDays(1))).toJson();
 
-    private final String errorUser = new RequestForTest().setProps("doctorName", "good")
-            .setProps("patientName", "Ay")
-            .setProps("date", "2021-12-21 22:00").toJson();
+    private final String leaWongApp2 = new RequestForTest().setProps("doctor", "Lea Wong")
+            .setProps("patient", "Indi Grimes")
+            .setProps("date", dateTimeFormatter.format(date.plusDays(2))).toJson();
 
-    private final RequestForTest user = new RequestForTest(). setProps("doctorName", "Phill")
-            .setProps("patientName", "Bol it")
-            .setProps("date", "2021-12-21 22:00");
+    private final String leaWongApp3 = new RequestForTest().setProps("doctor", "Lea Wong")
+            .setProps("patient", "Indi Grimes")
+            .setProps("date", dateTimeFormatter.format(date.plusDays(3))).toJson();
 
-    private final String doctorNameEmpty = new RequestForTest(user).setProps("doctorName", "").toJson();
-    private final String NoPatientName = new RequestForTest(user).setProps("patientName", null).toJson();
-    private final String patientNameEmpty =new RequestForTest(user).setProps("patientName", "").toJson();
-    private final String NoDoctorName = new RequestForTest(user).setProps("doctorName", null).toJson();
-    private final String dateEmpty =  new RequestForTest(user).setProps("date", "").toJson();
-    private final String NoDate=  new RequestForTest(user).setProps("date", null).toJson();
+    private final String leaWongApp4 = new RequestForTest().setProps("doctor", "Lea Wong")
+            .setProps("patient", "Indi Grimes")
+            .setProps("date", dateTimeFormatter.format(date.plusDays(4))).toJson();
+
+    private final String pamelaUppersonApp2 = new RequestForTest().setProps("doctor", "Pamela Upperson")
+            .setProps("patient", "Ay")
+            .setProps("date", dateTimeFormatter.format(date.plusDays(2))).toJson();
+
+    private final String pamelaUppersonApp3 = new RequestForTest().setProps("doctor", "Pamela Upperson")
+            .setProps("patient", "Ay")
+            .setProps("date", dateTimeFormatter.format(date.plusDays(3))).toJson();
+
+    private final String pamelaUppersonApp4 = new RequestForTest().setProps("doctor", "Pamela Upperson")
+            .setProps("patient", "Ay")
+            .setProps("date", dateTimeFormatter.format(date.plusDays(4))).toJson();
+
+    private final RequestForTest newDocLeaWong = new RequestForTest().setProps("doctor", leaWong)
+            .setProps("patient", "Bol it")
+            .setProps("date", dateTimeFormatter.format(date));
+
+    private final String doctorNameEmpty = new RequestForTest(newDocLeaWong).setProps("doctor", "").toJson();
+    private final String doctorNameSpaces = new RequestForTest(newDocLeaWong).setProps("doctor", "   ").toJson();
+    private final String noPatientName = new RequestForTest(newDocLeaWong).setProps("patient", null).toJson();
+    private final String patientNameEmpty = new RequestForTest(newDocLeaWong).setProps("patient", "").toJson();
+    private final String patientSpaces = new RequestForTest(newDocLeaWong).setProps("patient", "      ").toJson();
+    private final String noDoctorName = new RequestForTest(newDocLeaWong).setProps("doctor", null).toJson();
+    private final String dateEmpty = new RequestForTest(newDocLeaWong).setProps("date", "").toJson();
+    private final String noDate = new RequestForTest(newDocLeaWong).setProps("date", null).toJson();
+    private final String wrongDateFormat = new RequestForTest(newDocLeaWong).setProps("date", "2021-10-11 11:00").toJson();
+
+
     CheckResult testPostApi(String api, String body, int status, String message) {
         HttpResponse response = post(api, body).send();
         if (response.getStatusCode() != status) {
@@ -104,45 +156,66 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
                     + "status code " + status + ", responded: " + response.getStatusCode() + "\n"
                     + message + "\n"
                     + "Response body:\n" + response.getContent() + "\n"
-                    );
+            );
         }
+        System.out.println(response.getContent());
         return CheckResult.correct();
     }
 
-    @DynamicTest(order = -1)
+    @DynamicTest(order = 1)
     DynamicTesting[] dt = new DynamicTesting[]{
 
-            // Test wrong POST request for POST apies
+            // negative tests
 
+            () -> testGetApi(appointments, 204, "Wrong Status code"),
             () -> testPostApi(setAppointment, doctorNameEmpty, 400, "Empty doctorName field!"),
-            () -> testPostApi(setAppointment, NoPatientName, 400, "patientName field is absent!"),
-            () -> testPostApi(setAppointment, patientNameEmpty, 400, "Empty patientName field!"),
-            () -> testPostApi(setAppointment,NoDoctorName, 400, "doctorName field is absent!"),
+            () -> testPostApi(setAppointment, noDoctorName, 400, "doctorName field is absent!"),
+            () -> testPostApi(setAppointment, doctorNameSpaces, 400, "doctorName field is absent!"),
+            () -> testPostApi(setAppointment, patientNameEmpty, 400, "Empty patientName field!"),//#5
+            () -> testPostApi(setAppointment, noPatientName, 400, "patientName field is absent!"),
+            () -> testPostApi(setAppointment, patientSpaces, 400, "patientName field is absent!"),
+
             () -> testPostApi(setAppointment, dateEmpty, 400, "Empty date field!"),
-            () -> testPostApi(setAppointment, NoDate, 400, "date field is absent!"),
-            () -> testGetApi(appointments,  204, "Wrong Status code"),
+            () -> testPostApi(setAppointment, noDate, 400, "date field is absent!"),
+            () -> testGetApi(appointments, 204, "Wrong Status code"),//#10
+            () -> testPostApi(setAppointment, wrongDateFormat, 400, "wrong date format"),
 
+            //SetAppointsCheck
+            () -> testPostSetAppointments(leaWongApp1),//#12
+            () -> testPostSetAppointments(leaWongApp2),//#13
+            () -> testPostSetAppointments(leaWongApp3),//#14
 
+            //GetAllAppointmentsCheck
+            () -> testGetAllappointments(),//#15
+
+            //SetAppointsCheck
+            () -> testPostSetAppointments(pamelaUppersonApp1),//#16
+            () -> testPostSetAppointments(pamelaUppersonApp2),//#17
+            () -> testPostSetAppointments(pamelaUppersonApp3),//#18
+            () -> testPostSetAppointments(leaWongApp4),//#19
+            () -> testPostSetAppointments(pamelaUppersonApp4),//#20
+
+            //GetAllAppointmentsCheck
+            () -> testGetAllappointments(),//#21
+
+            () -> testDeleteAppointment(),//#22
+            () -> testGetApi(appointments, 204, "Wrong Status code"),//#23
+
+            //deleteAppointemntsCheck
+            () -> testDeleteAppointment(),//#24
+
+            () -> testPostSetAppointments(pamelaUppersonApp1),//#25
+            () -> testPostSetAppointments(pamelaUppersonApp2),//#26
+            () -> testPostSetAppointments(pamelaUppersonApp3),//#27
+            () -> testGetAllappointments(),//#28
+            () -> testPostSetAppointments(leaWongApp1),//#29
+            () -> testDeleteAppointment(),//#30
     };
 
 
-
-    Object[][] array = {
-            {1, newUser},
-            {2, newUser1},
-            {3, newUser2},
-            {4, newUser1},
-            {5, newUser1},
-            {6, errorUser},
-            {7, newUser}
-
-    };
-    List<String> resToCheck1 = new ArrayList<>();
-
-
-    @DynamicTest(order = 0, data = "array")
-    CheckResult testPost1(int x, String m) {
-        HttpResponse response = post("/setAppointment", m).send();
+    // Test Post setAppointment
+    CheckResult testPostSetAppointments(String appBody) {
+        HttpResponse response = post("/setAppointment", appBody).send();
 
         if (response.getStatusCode() != 200) {
             return CheckResult.wrong("POST /setAppointment should respond with " +
@@ -156,68 +229,41 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
         } catch (Exception ex) {
             return CheckResult.wrong("POST /setAppointment should return a valid JSON");
         }
-        String results = m.replaceAll("[\"}{]*", "");
-        String arr[] = results.split("[:,]");
-        Arrays.stream(arr).forEach(System.out::println);
-        if (arr.length < 6) {
-            return CheckResult.wrong("Check request parameters. They all should be present");
-        }
-        System.out.println(arr[1] + "+ " + arr[3] + "+ " + arr[5] + ":" + arr[6]);
+
+        JsonObject userJson = getJson(appBody).getAsJsonObject();
+        String patient = userJson.get("patient").getAsString().trim().toLowerCase();
+        String doctor = userJson.get("doctor").getAsString().toLowerCase().trim();
+        String date = userJson.get("date").getAsString().toLowerCase().trim();
+        System.out.println(date + "   " + doctor + " " + patient);
+
         expect(String.valueOf(json)).asJson().check(
 
                 isObject()
                         .value("idApp", isNumber())
-                        .value("doctorName", arr[1].trim())
-                        .value("patientName", arr[3].trim())
-                        .value("date", compile((arr[5] + ":" + arr[6]).trim())
+                        .value("doctor", doctor)
+                        .value("patient", patient)
+                        .value("date", date)
 
-                        ));
+        );
 
-        String resToCheck = "\"" +x + "\":{\"idApp\":" +  json.getAsJsonObject().get("idApp").getAsInt() + ",\"doctorName\":\"" + arr[1].trim() + "\",\"patientName\":\"" + arr[3].trim() + "\",\"date\":\"" + (arr[5] + ":" + arr[6]).trim() + "\"}".trim();
-        resToCheck1.add(resToCheck);
-        StringBuilder toPrint = new StringBuilder();
 
-        for (int i = 0; i < resToCheck1.size(); i++) {
-            toPrint.append(resToCheck1.get(i));
-            if (i < resToCheck1.size() - 1) {
-                toPrint.append(",");
-            }
+        long id = getJson(response.getContent()).getAsJsonObject().get("idApp").getAsLong();
+        if (idsForAppointments.contains(id)) {
+            return CheckResult.wrong("id should be unique. This id " + id + " exist");
         }
+        appointmentsCorrectJson.add(response.getContent());
+        idsForAppointments.add(id);
 
 
-        System.out.println("{" + toPrint + "}");
-
-        response = get("/appointments").send();
-
-        if (response.getStatusCode() != 200) {
-            return CheckResult.wrong("GET /appointments should respond with " +
-                    "status code 200, responded: " + response.getStatusCode() + "\n\n" +
-                    "Response body:\n" + response.getContent());
-        }
-
-
-        try {
-            json = response.getJson();
-        } catch (Exception ex) {
-            return CheckResult.wrong("GET /appointments should return a valid JSON");
-        }
-
-        System.out.println(response.getContent());
-        if (!response.getContent().equals("{" + toPrint + "}")) {
-
-            return CheckResult.wrong("Response with mistake . It is like this:" + response.getContent()
-                    + "\n but should be like this: " + "{" + toPrint + "}");
-        }
         return CheckResult.correct();
     }
 
+    CheckResult testGetAllappointments() {
 
-    @DynamicTest(order = 2, data = "array")
-    CheckResult testDelete1(int x, String m) {
-        HttpResponse response = delete("deleteAppointment?id=" + x).send();
+        HttpResponse response = get("/appointments").send();
 
         if (response.getStatusCode() != 200) {
-            return CheckResult.wrong("DELETE /deleteAppointment?id=1 should respond with " +
+            return CheckResult.wrong("GET /appointments should respond with " +
                     "status code 200, responded: " + response.getStatusCode() + "\n\n" +
                     "Response body:\n" + response.getContent());
         }
@@ -226,66 +272,69 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
         try {
             json = response.getJson();
         } catch (Exception ex) {
-            return CheckResult.wrong("DELETE /deleteAppointment?id=1 should return a valid JSON");
+            return CheckResult.wrong("GET /appointments should return a valid JSON");
         }
 
-
-        if (response.getContent().contains("The appointment was already cancelled or does not exist!")) {
-            return CheckResult.wrong("If DELETE /deleteAppointment?id=1 responded with " +
-                    "status code" + response.getStatusCode() + "\n\n" +
-                    "Response body:\n should not be: " + response.getContent());
-        } else {
-            expect(String.valueOf(json)).asJson().check(
-
-                    isObject()
-                            .value("idApp", isNumber())
-                            .value("doctorName", compile("\\w+\\s*\\w*"))
-                            .value("patientName", compile("\\w+\\s*\\w*"))
-                            .value("date", compile("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}"))
-
-            );
+        if (!response.getJson().isJsonArray()) {
+            return CheckResult.wrong("Wrong object in response, expected array of JSON but was \n" +
+                    response.getContent().getClass());
         }
+
         System.out.println(response.getContent());
+        System.out.println(appointmentsCorrectJson.toString());
 
-        String results1 = m.replaceAll("[\"}]*", "");
-        String results = results1.replace("}", "");
-
-        String arr[] = results.split("[:,]");
-        System.out.println(arr[1] + "+ " + arr[3] + "+ " + arr[5] + ":" + arr[6]);
-        String resToCheck = "{\"idApp\":" +  json.getAsJsonObject().get("idApp").getAsInt() + ",\"doctorName\":\"" + arr[1].trim() + "\",\"patientName\":\"" + arr[3].trim() + "\",\"date\":\"" + (arr[5] + ":" + arr[6]).trim() + "\"}".trim();
+        String correctJsonToString = convert(appointmentsCorrectJson.toArray(new String[appointmentsCorrectJson.size()]));
+        JsonArray correctJson = getJson(correctJsonToString).getAsJsonArray();
+        JsonArray responseJson = getJson(response.getContent()).getAsJsonArray();
 
 
-        if (!response.getContent().equals(resToCheck)) {
-
-            return CheckResult.wrong("Response with mistake . It is like this:" + response.getContent()
-                    + "\n but should be like this:" + resToCheck);
+        if (responseJson.size() != correctJson.size()) {
+            return CheckResult.wrong("Correct json array size should be" +
+                    correctJson.size() + "\n\n" +
+                    "Response array size is:\n" + responseJson.size());
         }
+
+
+        for (int i = 0; i < responseJson.size(); i++) {
+
+
+            expect(responseJson.get(i).getAsJsonObject().toString()).asJson()
+                    .check(isObject()
+                            .value("idApp", correctJson.get(i).getAsJsonObject().get("idApp").getAsLong())
+                            .value("doctor", correctJson.get(i).getAsJsonObject().get("doctor").getAsString())
+//                            .value("specialization", correctJson.get(i).getAsJsonObject().get("specialization").getAsString())
+//                            .value("doctorId", correctJson.get(i).getAsJsonObject().get("doctorId").getAsLong())
+                            .value("patient", correctJson.get(i).getAsJsonObject().get("patient").getAsString())
+                            .value("date", correctJson.get(i).getAsJsonObject().get("date").getAsString()));
+//            ids.add(correctJson.get(i).getAsJsonObject().get("idApp").getAsLong());
+
+        }
+
         return CheckResult.correct();
     }
 
-
-    int[] iteration = {
-            1, 2, 3, 4, 5
-    };
-
-    @DynamicTest(order = 3, data = "iteration")
-    CheckResult testDelete5(int x) {
-        HttpResponse response = delete("deleteAppointment?id=" + resToCheck1.size()).send();
+    CheckResult testDeleteAppointment() {
+        int size = idsForAppointments.size();
+        for (int i = 0; i < size; i++) {
 
 
-        if (response.getStatusCode() == 409 && response.getContent().contains("The appointment does not exist or one of the fields is null!")) {
-            System.out.println(response.getContent());
-            return CheckResult.correct();
-        } else if (response.getStatusCode() == 400 && response.getContent().contains("The appointment does not exist or was already cancelled")) {
-            System.out.println(response.getContent());
-            return CheckResult.correct();
-        } else if (response.getStatusCode() == 500 && response.getContent().contains("The date field is null!")) {
-            System.out.println(response.getContent());
-            return CheckResult.correct();
-        } else {
-            if (response.getStatusCode() != 400) {
-                return CheckResult.wrong("DELETE /deleteAppointment?id=" + (resToCheck1.size() - 1 + x) + " should respond with " +
-                        "status code 400, responded: " + response.getStatusCode() + "\n\n" +
+            HttpResponse response = delete("deleteAppointment?id=" + idsForAppointments.get(i)).send();
+
+
+            if (response.getStatusCode() == 409 && response.getContent().contains("The appointment does not exist or one of the fields is null!")) {
+                System.out.println(response.getContent());
+                return CheckResult.correct();
+            } else if (response.getStatusCode() == 400 && response.getContent().contains("The appointment does not exist or was already cancelled")) {
+                System.out.println(response.getContent());
+                return CheckResult.correct();
+            } else if (response.getStatusCode() == 500 && response.getContent().contains("The date field is null!")) {
+                System.out.println(response.getContent());
+                return CheckResult.correct();
+            }
+
+            if (response.getStatusCode() != 200) {
+                return CheckResult.wrong("DELETE /deleteAppointment?id= should respond with " +
+                        "status code 200, responded: " + response.getStatusCode() + "\n\n" +
                         "Response body:\n" + response.getContent());
             }
 
@@ -293,19 +342,35 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
             try {
                 json = response.getJson();
             } catch (Exception ex) {
-                return CheckResult.wrong("DELETE /deleteAppointment?id=" + (resToCheck1.size() - 1 + x) + " should return a valid JSON");
+                return CheckResult.wrong("DELETE /deleteAppointment?id= should return a valid JSON");
             }
-            expect(String.valueOf(json)).asJson().check(
 
-                    isObject()
-                            .value("idApp", isNumber(+resToCheck1.size()))
-                            .value("doctorName", compile("\\w+\\s*\\w*"))
-                            .value("patientName", compile("\\w+\\s*\\w*"))
-                            .value("date", compile("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}"))
+//            if (!response.getJson().isJsonArray()) {
+//                return CheckResult.wrong("Wrong object in response, expected array of JSON but was \n" +
+//                        response.getContent().getClass());
+//            }
 
-            );
+            String correctJsonToString = convert(appointmentsCorrectJson.toArray(new String[appointmentsCorrectJson.size()]));
+            JsonArray correctJson = getJson(correctJsonToString).getAsJsonArray();
+            JsonObject responseJson = getJson(response.getContent()).getAsJsonObject();
+
+            expect(responseJson.toString()).asJson()
+                    .check(isObject()
+                            .value("idApp", correctJson.get(i).getAsJsonObject().get("idApp").getAsLong())
+                            .value("doctor", correctJson.get(i).getAsJsonObject().get("doctor").getAsString())
+//                            .value("specialization", correctJson.get(i).getAsJsonObject().get("specialization").getAsString())
+//                            .value("doctorId", correctJson.get(i).getAsJsonObject().get("doctorId").getAsLong())
+                            .value("patient", correctJson.get(i).getAsJsonObject().get("patient").getAsString())
+                            .value("date", correctJson.get(i).getAsJsonObject().get("date").getAsString()));
+
+
+        }
+
+        for (int i = 0; i < size; i++) {
+
+            appointmentsCorrectJson.remove(0);
+            idsForAppointments.remove(0);
         }
         return CheckResult.correct();
     }
-
 }

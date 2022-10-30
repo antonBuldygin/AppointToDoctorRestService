@@ -1,7 +1,6 @@
 import AppointToDoctorRestService.Main;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
@@ -15,15 +14,12 @@ import java.lang.reflect.Type;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import static java.util.regex.Pattern.compile;
 import static org.hyperskill.hstest.common.JsonUtils.getJson;
 import static org.hyperskill.hstest.testing.expect.Expectation.expect;
-import static org.hyperskill.hstest.testing.expect.json.JsonChecker.*;
-import static org.hyperskill.hstest.testing.expect.json.JsonChecker.isArray;
+import static org.hyperskill.hstest.testing.expect.json.JsonChecker.isNumber;
+import static org.hyperskill.hstest.testing.expect.json.JsonChecker.isObject;
 
 
 class RequestForTest {
@@ -104,6 +100,7 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
     // Doctors' names
     private final String phillGood = "Phill good";
     private final String leaWong = "Lea Wong";
+    private final String director = "director";
     private final String pamelaUpperson = "Pamela Upperson";
     private final String doctorHouse = "Dr. House";
     private final String unknownDoctor = "Unknown";
@@ -122,6 +119,9 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
     LocalDate date = LocalDate.now();
     DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
+    private final String directorApp1 = new RequestForTest().setProps("doctor", director)
+            .setProps("patient", "Bol it")
+            .setProps("date", dateTimeFormatter.format(date)).toJson();
     private final String leaWongApp1 = new RequestForTest().setProps("doctor", leaWong)
             .setProps("patient", "Ay Bolit")
             .setProps("date", dateTimeFormatter.format(date.plusDays(1))).toJson();
@@ -158,6 +158,8 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
             .setProps("patient", "Bol it")
             .setProps("date", dateTimeFormatter.format(date));
 
+
+
     private final String doctorNameEmpty = new RequestForTest(newDocLeaWong).setProps("doctor", "").toJson();
     private final String doctorNameSpaces = new RequestForTest(newDocLeaWong).setProps("doctor", "   ").toJson();
     private final String noPatientName = new RequestForTest(newDocLeaWong).setProps("patient", null).toJson();
@@ -173,6 +175,7 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
     private final String doctorLeaWong = new RequestForTest().setProps("doctorName", leaWong).toJson();
     private final String doctorPamelaUpperson = new RequestForTest().setProps("doctorName", pamelaUpperson).toJson();
     private final String doctorDrHouse = new RequestForTest().setProps("doctorName", doctorHouse).toJson();
+    private final String docDirector = new RequestForTest().setProps("doctorName",director).toJson();
     private final String doctorAddEmptyName = new RequestForTest().setProps("doctorName", "").toJson();
     private final String doctorAddNull = new RequestForTest().toJson();
     private final String doctorAddEmptySpaces = new RequestForTest().setProps("doctorName", "         ").toJson();
@@ -205,111 +208,125 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
     @DynamicTest(order = -1)
     DynamicTesting[] dt = new DynamicTesting[]{
 
-            // negative tests
+            // negative tests for newDoctor, available days Api
             () -> testGetApi(availbleDates + leaWong.trim().replaceAll("[\\s]+", "%20"), 204, "Wrong Status code"),
-            () -> testGetApi(appointments, 204, "Wrong Status code"),
             () -> testPostApi(newDoctor, doctorAddEmptyName, 400, "Empty doctorName field!"),
             () -> testPostApi(newDoctor, doctorAddNull, 400, "doctorName field is absent!"),
             () -> testPostApi(newDoctor, doctorAddEmptySpaces, 400, "doctorName field is absent!"),//#5
 
 
-            //check APIs
-
-//            () -> testPostApi(newDoctor, doctorLeaWong, 200, "Should add new doctor"),
-//            () -> testGetApi(availbleDates + leaWong.trim().replaceAll("[\\s]+", "%20"), 200, "should answer status 200"),
-//            () -> testPostApi(newDoctor, doctorPhilGood, 200, "Should add new doctor"),
-//            () -> testGetApi(availbleDates + phillGood.trim().replaceAll("[\\s]+", "%20"), 200, "should answer status 200"),
-//            () -> testPostApi(newDoctor, doctorPamelaUpperson, 200, "Should add new doctor"),
-//            () -> testGetApi(availbleDates + pamelaUpperson.trim().replaceAll("[\\s]+", "%20"), 200, "should answer status 200"),
-
-            // negative tests
+            // negative tests  for appointments, setAppointment Api
+            () -> testGetApi(appointments, 204, "Wrong Status code"),
             () -> testPostApi(setAppointment, doctorNameEmpty, 400, "Empty doctorName field!"),
             () -> testPostApi(setAppointment, noDoctorName, 400, "doctorName field is absent!"),
             () -> testPostApi(setAppointment, doctorNameSpaces, 400, "doctorName field is absent!"),
+
+            // negative tests for  available days Api
             () -> testGetApi(availbleDates + unknownDoctor.trim().replaceAll("[\\s]+", "%20"), 204, "should answer status 204 - no available time for unknown doctor "),
 
-            // negative tests
-
+            // negative tests for appointments, setAppointment Api
             () -> testPostApi(setAppointment, patientNameEmpty, 400, "Empty patientName field!"),//#10
             () -> testPostApi(setAppointment, noPatientName, 400, "patientName field is absent!"),
             () -> testPostApi(setAppointment, patientSpaces, 400, "patientName field is absent!"),
-
             () -> testPostApi(setAppointment, dateEmpty, 400, "Empty date field!"),
             () -> testPostApi(setAppointment, noDate, 400, "date field is absent!"),
             () -> testGetApi(appointments, 204, "Wrong Status code"),//#15
-            () -> testGetApi(statisticsDoctor, 204, "Wrong Status code"),
-            () -> testGetApi(statisticsDay, 204, "Wrong Status code"),
-
             () -> testPostApi(setAppointment, wrongDateFormat, 400, "patientName field is absent!"),
 
-            //positive check of Doctors endpoints
-            () -> testAvailableDatesByDoctor(leaWong, availableDays, 204),//#19
-            () -> newDoctorEndpointCheck(doctorLeaWong),//#20
+            // negative tests for  available days Api
+            () -> testAvailableDatesByDoctor(leaWong, availableDays, 204),//#17
+
+            //checking Doctors endpoints (Lea Wong)
+            () -> newDoctorEndpointCheck(doctorLeaWong),//#18
             () -> testPostApi(newDoctor, doctorLeaWong, 400, "Should not add new doctor with the same name"),
-            () -> testAvailableDatesByDoctor(leaWong, availableDays, 200), //#22
-            () -> getAllDoctorslist(),//#23
-            () -> testDeleteDoctor(deleteDoctor, leaWong, 200, "should delete doctor"),
-            () -> getAllDoctorslist(),//#25
-            () -> testAvailableDatesByDoctor("director", availableDays, 200),//#26
-            () -> testAvailableDatesByDoctor(leaWong, availableDays, 204),//#27
-            () -> newDoctorEndpointCheck(doctorLeaWong),//#28
-            () -> testAvailableDatesByDoctor(leaWong, availableDays, 200),//#29
-            () -> newDoctorEndpointCheck(doctorPamelaUpperson),//#30
-            () -> testPostApi(newDoctor, doctorPamelaUpperson, 400, "Should not add new doctor with the same name"),
-            () -> testDeleteDoctor(deleteDoctor, pamelaUpperson, 200, "should delete doctor"),//#30
-            () -> getAllDoctorslist(), //#33
-            () -> newDoctorEndpointCheck(doctorPamelaUpperson),//#34
+            () -> testAvailableDatesByDoctor(leaWong, availableDays, 200), //#20
+            () -> getAllDoctorslist(),//#21
 
-            () -> newDoctorEndpointCheck(doctorPhilGood),//#35
-            () -> getAllDoctorslist(), //#36
-            () -> testDeleteDoctor(deleteDoctor, phillGood, 200, "should delete doctor"),
+
+            () -> testAvailableDatesByDoctor(director, availableDays, 204),//#22
+            () -> testAvailableDatesByDoctor(leaWong, availableDays, 200),//#23
+
+            () -> testPostApi(newDoctor, doctorLeaWong, 400, "Should not add new doctor with the same name"),//#24
+            () -> testAvailableDatesByDoctor(leaWong, availableDays, 200),//#25
+
+            //checking Doctors endpoints (Pamela Upperson)
+            () -> newDoctorEndpointCheck(doctorPamelaUpperson),//#26
             () -> testPostApi(newDoctor, doctorPamelaUpperson, 400, "Should not add new doctor with the same name"),
-            () -> newDoctorEndpointCheck(doctorDrHouse),//#39
+            () -> getAllDoctorslist(), //#28
+
+
+            //checking Doctors endpoints (Phil Good)
+            () -> newDoctorEndpointCheck(doctorPhilGood),//#29
+            () -> testAvailableDatesByDoctor(phillGood, availableDays, 200),//#30
+            () -> testPostApi(newDoctor, doctorPhilGood, 400, "Should not add new doctor with the same name"),
+            () -> getAllDoctorslist(), //#32
+
+            // negative tests for  available days Api for (Pamela Upperson)
+            () -> testPostApi(newDoctor, doctorPamelaUpperson, 400, "Should not add new doctor with the same name"),
+
+            //checking Doctors endpoints (Dr. House)
+            () -> newDoctorEndpointCheck(doctorDrHouse),//#34
             () -> testPostApi(newDoctor, doctorDrHouse, 400, "Should not add new doctor with the same name"),
-            () -> getAllDoctorslist(),//#41
-            () -> testPostSetAppointments(leaWongApp1),//#42
-            () -> testPostSetAppointments(leaWongApp2),//#43
-            () -> testPostSetAppointments(leaWongApp3),//#44
-            () -> testGetAllappointments(),//#45
-            () -> testAvailableDatesByDoctor(leaWong, availableDays, 200),//#46
-            () -> testAvailableDatesByDoctor(pamelaUpperson, availableDays, 200),//#47
-            () -> testPostSetAppointments(pamelaUppersonApp1),//#48
-            () -> testPostSetAppointments(pamelaUppersonApp2),//#49
-            () -> testPostSetAppointments(pamelaUppersonApp3),//#50
-            () -> testAvailableDatesByDoctor(doctorHouse, availableDays, 200),//#51
-            () -> testPostSetAppointments(leaWongApp4),//#52
-            () -> testPostSetAppointments(pamelaUppersonApp4),//#53
-            () -> testGetAllappointments(),//#54
-            () -> testGetStatisticPerDay(statisticsDay), //#55
-            () -> testGetStatisticPerDoctor(statisticsDoctor),//#56
-            () -> testDeleteAppointment(),//#57
-            () -> testGetApi(appointments, 204, "Wrong Status code"),//#58
-            () -> testDeleteAppointment(),//#59
-            () -> testAvailableDatesByDoctor(leaWong, availableDays, 200),//#60
-            () -> testAvailableDatesByDoctor(pamelaUpperson, availableDays, 200),//#61
+            () -> testPostApi(newDoctor, doctorDrHouse, 400, "Should not add new doctor with the same name"),
+            () -> getAllDoctorslist(),//#37
 
-//            () -> testGetStatisticPerDay(statisticsDay), //#68
+            //checking setAppointment and Appointments  endPoints for Lea Wong
+            () -> testPostSetAppointments(leaWongApp1),//#38
+            () -> testPostSetAppointments(leaWongApp2),//#39
+            () -> testPostSetAppointments(leaWongApp3),//#40
+            () -> testGetAllappointments(),//#41
 
-            () -> testPostSetAppointments(pamelaUppersonApp1),//#62
-            () -> testPostSetAppointments(pamelaUppersonApp2),//#63
-            () -> testPostSetAppointments(pamelaUppersonApp3),//#64
+            //checking update of available days
+            () -> testAvailableDatesByDoctor(leaWong, availableDays, 200),//#42
+            () -> testAvailableDatesByDoctor(pamelaUpperson, availableDays, 200),//#43
 
-            () -> testGetStatisticPerDay(statisticsDay), //#65
+            //checking setAppointment and Appointments  endPoints for Pamela Upperson
+            () -> testPostSetAppointments(pamelaUppersonApp1),//#44
+            () -> testPostSetAppointments(pamelaUppersonApp2),//#45
+            () -> testPostSetAppointments(pamelaUppersonApp3),//#46
 
-            () -> testDeleteDoctor(deleteDoctor, pamelaUpperson, 200, "should delete doctor"),//#66
-            () -> testPostSetAppointments(leaWongApp1),//#67
-            () -> testAvailableDatesByDoctor(leaWong, availableDays, 200),//#68
-            () -> testGetStatisticPerDay(statisticsDay), //#69
-            () -> testAvailableDatesByDoctor("director", availableDays, 200),
-            () -> testAvailableDatesByDoctor(pamelaUpperson, availableDays, 204),//#71
-            () -> testGetStatisticPerDoctor(statisticsDoctor),//#72
+            //checking update of available days for Dr. House
+            () -> testAvailableDatesByDoctor(doctorHouse, availableDays, 200),//#47
+
+            //checking 4th setAppointment and Appointments  endPoints for Pamela Upperson and Lea Wong
+            () -> testPostSetAppointments(leaWongApp4),//#48
+            () -> testPostSetAppointments(pamelaUppersonApp4),//#49
+            () -> testGetAllappointments(),//#50
+
+            //checking deleteAppointment endPoints
+            () -> testDeleteAppointment(),//#51
+            () -> testGetApi(appointments, 204, "Wrong Status code"),//#52
+            () -> testDeleteAppointment(),//#53
+            () -> testGetApi(appointments, 204, "Wrong Status code"),//#54
+
+            //checking update of available days for doctors after  deleteAppointments
+            () -> testAvailableDatesByDoctor(leaWong, availableDays, 200),//#55
+            () -> testAvailableDatesByDoctor(pamelaUpperson, availableDays, 200),//#56
+
+            //checking setAppointment  endPoint
+            () -> testPostSetAppointments(pamelaUppersonApp1),//#57
+            () -> testPostSetAppointments(pamelaUppersonApp2),//#58
+            () -> testPostSetAppointments(pamelaUppersonApp3),//#59
+            () -> testPostSetAppointments(leaWongApp1),//#60
+
+            //checking update of available days for doctor Lea Wong
+            () -> testAvailableDatesByDoctor(leaWong, availableDays, 200),//#61
+
+
+            () -> newDoctorEndpointCheck(docDirector),//#62
+
+            () -> testAvailableDatesByDoctor(director, availableDays, 200),//#63
+
+            () -> testPostApi(setAppointment, directorApp1, 400, "not allowed to ser appointment for director"),
+            () -> testAvailableDatesByDoctor(pamelaUpperson, availableDays, 200),//#65
+
     };
 
     //Test newDoctor POST endPoint
     CheckResult newDoctorEndpointCheck(String docName) {
         HttpResponse response = post("/newDoctor", docName).send();
         if (response.getStatusCode() != 200) {
-            return CheckResult.wrong("POST /setAppointment should respond with " +
+            return CheckResult.wrong("POST /newDoctor should respond with " +
                     "status code 200, responded: " + response.getStatusCode() + "\n\n" +
                     "Response body:\n" + response.getContent());
         }
@@ -317,11 +334,11 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
         try {
             json = response.getJson();
         } catch (Exception ex) {
-            return CheckResult.wrong("POST /setAppointment should return a valid JSON");
+            return CheckResult.wrong("POST /newDoctor should return a valid JSON");
         }
 
-        JsonObject requestJson = getJson(docName).getAsJsonObject();
-        String doctorName = requestJson.get("doctorName").getAsString().trim().toLowerCase();
+        JsonObject responseJson = getJson(docName).getAsJsonObject();
+        String doctorName = responseJson.get("doctorName").getAsString().trim().toLowerCase();
         System.out.println(response.getContent());
         expect(String.valueOf(json)).asJson().check(
                 isObject()
@@ -494,10 +511,10 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
 
                 isObject()
                         .value("idApp", isNumber())
-                        .value("doctorName", doctor)
-                        .value("specialization", "physician")
-                        .value("doctorId", isNumber())
-                        .value("patientName", patient)
+                        .value("doctor", doctor)
+//                        .value("specialization", "physician")
+//                        .value("doctorId", isNumber())
+                        .value("patient", patient)
                         .value("date", date)
 
         );
@@ -594,10 +611,10 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
             expect(responseJson.get(i).getAsJsonObject().toString()).asJson()
                     .check(isObject()
                             .value("idApp", correctJson.get(i).getAsJsonObject().get("idApp").getAsLong())
-                            .value("doctorName", correctJson.get(i).getAsJsonObject().get("doctorName").getAsString())
-                            .value("specialization", correctJson.get(i).getAsJsonObject().get("specialization").getAsString())
-                            .value("doctorId", correctJson.get(i).getAsJsonObject().get("doctorId").getAsLong())
-                            .value("patientName", correctJson.get(i).getAsJsonObject().get("patientName").getAsString())
+                            .value("doctor", correctJson.get(i).getAsJsonObject().get("doctor").getAsString())
+//                            .value("specialization", correctJson.get(i).getAsJsonObject().get("specialization").getAsString())
+//                            .value("doctorId", correctJson.get(i).getAsJsonObject().get("doctorId").getAsLong())
+                            .value("patient", correctJson.get(i).getAsJsonObject().get("patient").getAsString())
                             .value("date", correctJson.get(i).getAsJsonObject().get("date").getAsString()));
 //            ids.add(correctJson.get(i).getAsJsonObject().get("idApp").getAsLong());
 
@@ -669,7 +686,7 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
             String key = "";
             for (Map.Entry<String, Integer> entry : statisticsPerDoctor.entrySet()) {
                 if (entry.getKey().equals(forFilter)) {
-                     key = entry.getKey();
+                    key = entry.getKey();
                     doctorAppointmentsCount = entry.getValue();
                     statisticsPerDoctor.remove(entry.getKey());
 
@@ -832,27 +849,27 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
                 return CheckResult.wrong("DELETE /deleteAppointment?id= should return a valid JSON");
             }
 
-            if (!response.getJson().isJsonArray()) {
-                return CheckResult.wrong("Wrong object in response, expected array of JSON but was \n" +
-                        response.getContent().getClass());
-            }
+//            if (!response.getJson().isJsonArray()) {
+//                return CheckResult.wrong("Wrong object in response, expected array of JSON but was \n" +
+//                        response.getContent().getClass());
+//            }
 
             String correctJsonToString = convert(appointmentsCorrectJson.toArray(new String[appointmentsCorrectJson.size()]));
             JsonArray correctJson = getJson(correctJsonToString).getAsJsonArray();
-            JsonArray responseJson = getJson(response.getContent()).getAsJsonArray();
+            JsonObject responseJson = getJson(response.getContent()).getAsJsonObject();
 
-            expect(responseJson.get(0).getAsJsonObject().toString()).asJson()
+            expect(responseJson.toString()).asJson()
                     .check(isObject()
                             .value("idApp", correctJson.get(i).getAsJsonObject().get("idApp").getAsLong())
-                            .value("doctorName", correctJson.get(i).getAsJsonObject().get("doctorName").getAsString())
-                            .value("specialization", correctJson.get(i).getAsJsonObject().get("specialization").getAsString())
-                            .value("doctorId", correctJson.get(i).getAsJsonObject().get("doctorId").getAsLong())
-                            .value("patientName", correctJson.get(i).getAsJsonObject().get("patientName").getAsString())
+                            .value("doctor", correctJson.get(i).getAsJsonObject().get("doctor").getAsString())
+//                            .value("specialization", correctJson.get(i).getAsJsonObject().get("specialization").getAsString())
+//                            .value("doctorId", correctJson.get(i).getAsJsonObject().get("doctorId").getAsLong())
+                            .value("patient", correctJson.get(i).getAsJsonObject().get("patient").getAsString())
                             .value("date", correctJson.get(i).getAsJsonObject().get("date").getAsString()));
 
             for (Map.Entry<String, JsonArray> entry : mapOfAvailableDaysByDoctor.entrySet()
             ) {
-                if (entry.getKey().equals(correctJson.get(i).getAsJsonObject().get("doctorName").getAsString())) {
+                if (entry.getKey().equals(correctJson.get(i).getAsJsonObject().get("doctor").getAsString())) {
                     for (int m = 0; m < entry.getValue().size(); m++) {
                         String avalabletime = entry.getValue().get(m).getAsJsonObject().get("avalabletime").toString().replaceAll("\"", "");
                         if (avalabletime.equals(correctJson.get(i).getAsJsonObject().get("date").getAsString())) {
@@ -866,7 +883,7 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
                 }
             }
             for (Map.Entry<String, Integer> entry : statisticsPerDoctor.entrySet()) {
-                if (entry.getKey().equals(correctJson.get(i).getAsJsonObject().get("doctorName").getAsString())) {
+                if (entry.getKey().equals(correctJson.get(i).getAsJsonObject().get("doctor").getAsString())) {
                     statisticsPerDoctor.put(entry.getKey(), entry.getValue() - 1);
                 }
             }

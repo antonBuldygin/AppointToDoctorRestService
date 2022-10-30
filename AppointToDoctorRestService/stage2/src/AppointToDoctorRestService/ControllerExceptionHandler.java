@@ -32,7 +32,7 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
         body.put("status", status.value());
         body.put("error", "Bad Request");
         body.put("message", "Validation failed");
-        body.put("path", "/newDoctor");
+//        body.put("path", "/newDoctor");
         return new ResponseEntity<>(body, headers, status);
     }
 

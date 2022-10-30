@@ -4,13 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collector;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -40,15 +38,28 @@ public class AppBookingController {
             AppointmentToShow appointmentToShow = new AppointmentToShow();
             appointmentToShow.setIdApp(app.getIdApp());
             appointmentToShow.setDate(app.getDate());
-            appointmentToShow.setDoctorName(app.getDoctor().getDoctorName());
+            appointmentToShow.setDoctor(app.getDoctor().getDoctorName());
             appointmentToShow.setSpecialization(app.getDoctor().getDr());
             appointmentToShow.setDoctorId(app.getDoctor().getId());
-            appointmentToShow.setPatientName(app.getPatient().getPatientName());
+            appointmentToShow.setPatient(app.getPatient().getPatientName());
             return appointmentToShow;
         }).collect(Collectors.toList());
         return appointmentToShows;
     }
 
+    private static AppointmentToShow getAppointmentToShow(List<Appoint> appointList) {
+        List<AppointmentToShow> appointmentToShows = appointList.stream().map(app -> {
+            AppointmentToShow appointmentToShow = new AppointmentToShow();
+            appointmentToShow.setIdApp(app.getIdApp());
+            appointmentToShow.setDate(app.getDate());
+            appointmentToShow.setDoctor(app.getDoctor().getDoctorName());
+            appointmentToShow.setSpecialization(app.getDoctor().getDr());
+            appointmentToShow.setDoctorId(app.getDoctor().getId());
+            appointmentToShow.setPatient(app.getPatient().getPatientName());
+            return appointmentToShow;
+        }).collect(Collectors.toList());
+        return appointmentToShows.get(0);
+    }
     @GetMapping("/appointmentsByDoctor")
     public ResponseEntity<?> getDocAppointments(@RequestParam String doc) {
         if (appointment.showAppointmentbyDoctor(doc).size() == 0) {
@@ -76,9 +87,9 @@ public class AppBookingController {
     public ResponseEntity<?> deleteAppointment(@RequestParam(required = false) String id) {
         List<Appoint> deleted = appointment.deleteAppointment(id);
         if (deleted.isEmpty()) {
-            return new ResponseEntity<>("id not found to delete", HttpStatus.OK);
+            return new ResponseEntity<>("id not found to delete", HttpStatus.BAD_REQUEST);
         }
-        List<AppointmentToShow> appointmentToShows = getAppointmentToShows(deleted);
+        AppointmentToShow appointmentToShows = getAppointmentToShow(deleted);
         return new ResponseEntity<>(appointmentToShows, HttpStatus.OK);
     }
 
@@ -119,53 +130,53 @@ public class AppBookingController {
         AppointmentToShow appointmentToShow = new AppointmentToShow();
         appointmentToShow.setIdApp(appr.getIdApp());
         appointmentToShow.setDate(appr.getDate());
-        appointmentToShow.setDoctorName(appr.getDoctor().getDoctorName());
+        appointmentToShow.setDoctor(appr.getDoctor().getDoctorName());
         appointmentToShow.setSpecialization(appr.getDoctor().getDr());
         appointmentToShow.setDoctorId(appr.getDoctor().getId());
-        appointmentToShow.setPatientName(appr.getPatient().getPatientName());
+        appointmentToShow.setPatient(appr.getPatient().getPatientName());
 
         return new ResponseEntity<>(appointmentToShow, HttpStatus.OK);
     }
 
-    @DeleteMapping("/deleteDoctor")
-    public ResponseEntity<?> deleteDoctor(@RequestParam(required = false) String doc) {
+//    @DeleteMapping("/deleteDoctor")
+//    public ResponseEntity<?> deleteDoctor(@RequestParam(required = false) String doc) {
+//
+//        if ((doc)==(null) || doc.trim().equals("")) {
+//            return new ResponseEntity<>("Parameter should not be null or empty", HttpStatus.BAD_REQUEST);
+//        }
+//
+//        Doctor doctor = appointment.deleteDoctor(doc.toLowerCase().trim());
+//        if (doctor != null) {
+//            return new ResponseEntity<>(doctor, HttpStatus.OK);
+//        } else return new ResponseEntity<>("Doctor not found", HttpStatus.BAD_REQUEST);
+//    }
 
-        if ((doc)==(null) || doc.trim().equals("")) {
-            return new ResponseEntity<>("Parameter should not be null or empty", HttpStatus.BAD_REQUEST);
-        }
-
-        Doctor doctor = appointment.deleteDoctor(doc.toLowerCase().trim());
-        if (doctor != null) {
-            return new ResponseEntity<>(doctor, HttpStatus.OK);
-        } else return new ResponseEntity<>("Doctor not found", HttpStatus.BAD_REQUEST);
-    }
-
-    @GetMapping("/statisticsDay")
-    public ResponseEntity<?> statisticsPerDay() {
-        if (appointment.showAppointment().size() == 0) {
-            return new ResponseEntity<>("No appointments", HttpStatus.NO_CONTENT);
-        }
-        appoints = appointment.showAppointment();
-        Map<LocalDate, List<Appoint>> collect = appoints.stream().collect(Collectors.groupingBy(Appoint::getDate));
-
-        Map<LocalDate, Long> count1 = collect.entrySet().stream().collect(Collectors.toMap(
-                e -> e.getKey(), n -> n.getValue().stream().count()));
-
-        List<Map.Entry<LocalDate, Long>> collect1 = count1.entrySet().stream().collect(Collectors.toList());
-        return new ResponseEntity<>(collect1, HttpStatus.OK);
-    }
-
-    @GetMapping("/statisticsDoc")
-    public ResponseEntity<?> statisticsPerDoctor() {
-        if (appointment.showAppointment().size() == 0) {
-            return new ResponseEntity<>("No appointments", HttpStatus.NO_CONTENT);
-        }
-        appoints = appointment.showAppointment();
-
-        Map<Doctor, List<Appoint>> collect1 = appoints.stream().collect(Collectors.groupingBy(Appoint::getDoctor));
-        Map<String, Long> collect2 = collect1.entrySet().stream().collect(Collectors.toMap(
-                e -> e.getKey().getDoctorName(), m -> m.getValue().stream().count()));
-        List<Map.Entry<String, Long>> collect3 = collect2.entrySet().stream().collect(Collectors.toList());
-        return new ResponseEntity<>(collect3, HttpStatus.OK);
-    }
+//    @GetMapping("/statisticsDay")
+//    public ResponseEntity<?> statisticsPerDay() {
+//        if (appointment.showAppointment().size() == 0) {
+//            return new ResponseEntity<>("No appointments", HttpStatus.NO_CONTENT);
+//        }
+//        appoints = appointment.showAppointment();
+//        Map<LocalDate, List<Appoint>> collect = appoints.stream().collect(Collectors.groupingBy(Appoint::getDate));
+//
+//        Map<LocalDate, Long> count1 = collect.entrySet().stream().collect(Collectors.toMap(
+//                e -> e.getKey(), n -> n.getValue().stream().count()));
+//
+//        List<Map.Entry<LocalDate, Long>> collect1 = count1.entrySet().stream().collect(Collectors.toList());
+//        return new ResponseEntity<>(collect1, HttpStatus.OK);
+//    }
+//
+//    @GetMapping("/statisticsDoc")
+//    public ResponseEntity<?> statisticsPerDoctor() {
+//        if (appointment.showAppointment().size() == 0) {
+//            return new ResponseEntity<>("No appointments", HttpStatus.NO_CONTENT);
+//        }
+//        appoints = appointment.showAppointment();
+//
+//        Map<Doctor, List<Appoint>> collect1 = appoints.stream().collect(Collectors.groupingBy(Appoint::getDoctor));
+//        Map<String, Long> collect2 = collect1.entrySet().stream().collect(Collectors.toMap(
+//                e -> e.getKey().getDoctorName(), m -> m.getValue().stream().count()));
+//        List<Map.Entry<String, Long>> collect3 = collect2.entrySet().stream().collect(Collectors.toList());
+//        return new ResponseEntity<>(collect3, HttpStatus.OK);
+//    }
 }

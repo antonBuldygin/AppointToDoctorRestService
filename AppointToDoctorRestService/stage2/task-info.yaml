@@ -2,8 +2,6 @@ type: edu
 files:
 - name: src/AppointToDoctorRestService/Main.java
   visible: true
-- name: test/Tests.java
-  visible: false
 - name: src/AppointToDoctorRestService/Patient.java
   visible: true
 - name: src/AppointToDoctorRestService/Doctor.java
@@ -25,12 +23,4 @@ files:
 - name: src/AppointToDoctorRestService/DoctorRepository.java
   visible: true
 - name: src/AppointToDoctorRestService/ControllerExceptionHandler.java
-  visible: true
-- name: src/AppointToDoctorRestService/Service.java
-  visible: true
-- name: src/AppointToDoctorRestService/ServiceImpl.java
-  visible: true
-- name: src/AppointToDoctorRestService/AppBookingController.java
-  visible: true
-- name: test/AppointmentBookingToDoctorRestServiceTest.java
   visible: true
