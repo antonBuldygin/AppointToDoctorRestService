@@ -1,56 +1,139 @@
-<html>
+<h2>Description</h2>
 
-<h2>Task Description: Tips & Tricks</h2>
+<p>There are many reasons why people can change their job. In our hospital doctors can change their job as well. The hospital director requested that our program could transfer to him all&nbsp;the appointments set for the doctor who has leaved the hospital.</p>
 
-<p>This is a task description file.
-Its content will be displayed to a learner
-in the <strong>Task Description</strong> window.</p>
+<p>&nbsp;</p>
 
-<p>It supports both Markdown and HTML.
-To toggle the format, you can rename <strong>task.md</strong>
-to <strong>task.html</strong>, or vice versa.
-The default task description format can be changed
-in <strong>Preferences | Tools | Education</strong>,
-but this will not affect any existing task description files.</p>
+<h2>Objectives</h2>
 
-<p>The following features are available in
-<strong>task.md/task.html</strong>
-which are specific to the EduTools plugin:</p>
+<p>In this stage, your program should implement&nbsp;&nbsp; &nbsp;<code>/deleteDoctor?doc={doctor name}&nbsp;</code> endpoint that handles DELETE requests to delete doctor and returns information about deleted doctor. All appointments scheduled for this doctor should be transferd to doctor name &quot;director&quot;.</p>
+
+<p>Please use one of doctors&#39; names existing in the hospital which you can get from&nbsp;<code>/allDoctorslist&nbsp;</code>&nbsp;endpoint . Use the name&nbsp; as a request parameter.&nbsp;If appointment with requested name&nbsp; exists delete the doctor and&nbsp; return&nbsp;Response Status Code 200.&nbsp;&nbsp;Response body should be JSON object as following example:</p>
+
+<pre>
+<code class="language-json">{
+    "id": 1,
+    "doctorName": "pamella upperson"
+}
+</code></pre>
 
 <ul>
-<li>Hints can be added anywhere in the task text.
-Type "hint" and press Tab.
-Hints should be added to an empty line in the task text.
-In hints you can use both HTML and Markdown.
-<div class="hint">Text of your hint</div></li>
-
-<li>You may need to refer your learners to a particular lesson,
-task, or file. To achieve this, you can use the in-course links.
-Specify the path using the <code>&lt;a href="course://lesson1/task1/file1"&gt;
-link_text&lt;/a&gt;</code> format.</li><br>
-
-<li>You can insert shortcuts in the task description.
-While <strong>task.html/task.md</strong> is open,
-right-click anywhere on the <strong>Editor</strong> tab
-and choose the <strong>Insert shortcut</strong> option
-from the context menu.
-For example: &amp;shortcut:FileStructurePopup;.</li><br>
-
-<li>Insert the &percnt;<code>IDE_NAME</code>&percnt; macro,
-which will be replaced by the actual IDE name.
-For example, <strong>%IDE_NAME%</strong>.</li><br>
-
-<li>Insert PSI elements, by using links like
-<code>&lt;a href="psi_element://link.to.element"&gt;element description&lt;/a&gt;</code>.
-To get such a link, right-click the class or method
-and select <strong>Copy Reference</strong>.
-Then press &amp;shortcut:EditorPaste;
-to insert the link where appropriate.
-For example, a
-<a href="psi_element://java.lang.String#contains">link to the "contains" method</a>.</li><br>
-
-<li>You can add link to file using <strong>full path</strong> like
-  <code><a href="file://lesson1/task1/file.txt">file link</a></code>.
-</li>
+  <li>where name &quot;idApp&quot; is paired with value of unique id assigned to the doctor in Number format,</li>
+  <li>name &quot;doctorName&quot; is paired with value of doctor name which was in the request body and stored in databse with mentioned idApp in String format in lower case;</li>
 </ul>
-</html>
+
+<p>The endpoint should return&nbsp;Response Status Code 400 if the doctor does not exist in the database.&nbsp;</p>
+
+<p>There are several restrictions for&nbsp;doctor with name &quot;director&raquo;. It is not allowed to set appointments for the&nbsp;doctor with name &quot;director&quot;, it is possible to delete doctor with name&nbsp;&quot;director&quot; and then all appointments assigned to the &quot;director&quot; should be deleted as well.&nbsp;</p>
+
+<h3>Examples</h3>
+
+<p><strong>Example 1:</strong><em>&nbsp;a&nbsp;</em><code>DELETE&nbsp; /deleteDoctor?doc=pamella upperson&nbsp;</code><em>&nbsp;request if doctor exists:</em></p>
+
+<p><em>Response:</em>&nbsp;<code>200 OK</code></p>
+
+<p><em>Response body:</em></p>
+
+<pre>
+<code class="language-json">{
+    "id": 1,
+    "doctorName": "pamella upperson"
+}</code></pre>
+
+<p>&nbsp;</p>
+
+<p><strong>Example 2:</strong><em>&nbsp;a&nbsp;</em><code>DELETE&nbsp; /deleteDoctor?doc=pamella upperson&nbsp;</code><em>&nbsp;request if doctor does not exist:</em></p>
+
+<p><em>Response:</em>&nbsp;<code>400 Bad Request</code></p>
+
+<p><strong>Example 3:</strong><em>&nbsp;a&nbsp;</em><code>POST /setAppointment&nbsp;</code><em>request with&nbsp; &quot;doctor&quot; name director:</em><br />
+  <em>Request body:</em></p>
+
+<pre>
+<code class="language-json">{
+    "doctor": "director",
+    "patient": "Phil Good",
+    "date": "2022-11-03"
+}</code></pre>
+
+<p><em>Response:</em>&nbsp;<code>400 Bad Request</code></p>
+
+<p><strong>Example 4:</strong><em>&nbsp;a&nbsp;</em><code>GET &nbsp;/appointments&nbsp;</code> &nbsp;before doctor was deleted from database:</p>
+
+<p><em>Response:</em>&nbsp;<code>200 OK</code></p>
+
+<p><em>Response body:</em></p>
+
+<pre>
+<code class="language-json">[
+    {
+        "idApp": 10,
+        "doctor": "pamella upperson",
+        "patient": "unknown",
+        "date": "2022-11-01"
+    },
+    {
+        "idApp": 13,
+        "doctor": "pamella upperson",
+        "patient": "billi jim",
+        "date": "2022-11-02"
+    },
+    {
+        "idApp": 15,
+        "doctor": "pamella upperson",
+        "patient": "phil good",
+        "date": "2022-11-03"
+    }
+]</code></pre>
+
+<p><strong>&nbsp;</strong></p>
+
+<p><strong>Example 5:</strong><em>&nbsp;a&nbsp;</em><code>GET &nbsp;/appointments&nbsp;</code> after doctor was deleted from database:</p>
+
+<p><em>Response:</em>&nbsp;<code>200 OK</code></p>
+
+<p><em>Response body:</em></p>
+
+<pre>
+<code class="language-json">[
+    {
+        "idApp": 10,
+        "doctor": "director",
+        "patient": "unknown",
+        "date": "2022-11-01"
+    },
+    {
+        "idApp": 13,
+        "doctor": "director",
+        "patient": "billi jim",
+        "date": "2022-11-02"
+    },
+    {
+        "idApp": 15,
+        "doctor": "director",
+        "patient": "phil good",
+        "date": "2022-11-03"
+    }
+]</code></pre>
+
+<p>&nbsp;</p>
+
+<p><strong>&nbsp;Example 6:</strong><em>&nbsp;a&nbsp;</em><code>DELETE&nbsp; /deleteDoctor?doc=director&nbsp;</code><em>&nbsp;request to delete doctor with name &quot;director&quot;:</em></p>
+
+<p><em>Response:</em>&nbsp;<code>200 OK</code></p>
+
+<p><em>Response body:</em></p>
+
+<pre>
+<code class="language-json">{
+    "id": 2,
+    "doctorName": "director"
+}</code></pre>
+
+<p>&nbsp;</p>
+
+<p><strong>Example 5:</strong><em>&nbsp;a&nbsp;</em><code>GET &nbsp;/appointments&nbsp;</code> after doctor with name &quot;direcor&quot; was deleted from database:</p>
+
+<p><em>Response:</em>&nbsp;<code>204 No Content</code></p>
+
+<p><em>Response body:</em></p>

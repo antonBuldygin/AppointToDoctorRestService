@@ -1,56 +1,65 @@
-<html>
+<h2>Description</h2>
 
-<h2>Task Description: Tips & Tricks</h2>
+<p>For better management hospital work director needs to get information about doctor&rsquo;s workload. In this stage, let us create statistics of appointments quantity per doctor and&nbsp; statistics of appointments quantity per day.</p>
 
-<p>This is a task description file.
-Its content will be displayed to a learner
-in the <strong>Task Description</strong> window.</p>
+<p>&nbsp;</p>
 
-<p>It supports both Markdown and HTML.
-To toggle the format, you can rename <strong>task.md</strong>
-to <strong>task.html</strong>, or vice versa.
-The default task description format can be changed
-in <strong>Preferences | Tools | Education</strong>,
-but this will not affect any existing task description files.</p>
+<h2>Objectives</h2>
 
-<p>The following features are available in
-<strong>task.md/task.html</strong>
-which are specific to the EduTools plugin:</p>
+<p>At this stage implement two endpoints the&nbsp;<code>/statisticsDay</code>&nbsp;endpoint that handles&nbsp;<code>GET</code>&nbsp;requests and returns the information about the number of appointments set per day and&nbsp;the&nbsp;<code>/statisticsDoc</code>&nbsp;endpoint that handles&nbsp;<code>GET</code>&nbsp;requests and returns the information about the number of appointments set per doctor</p>
 
-<ul>
-<li>Hints can be added anywhere in the task text.
-Type "hint" and press Tab.
-Hints should be added to an empty line in the task text.
-In hints you can use both HTML and Markdown.
-<div class="hint">Text of your hint</div></li>
+<p>&nbsp;</p>
 
-<li>You may need to refer your learners to a particular lesson,
-task, or file. To achieve this, you can use the in-course links.
-Specify the path using the <code>&lt;a href="course://lesson1/task1/file1"&gt;
-link_text&lt;/a&gt;</code> format.</li><br>
+<h2>Examples</h2>
 
-<li>You can insert shortcuts in the task description.
-While <strong>task.html/task.md</strong> is open,
-right-click anywhere on the <strong>Editor</strong> tab
-and choose the <strong>Insert shortcut</strong> option
-from the context menu.
-For example: &amp;shortcut:FileStructurePopup;.</li><br>
+<p><strong>Example 1:</strong><em>&nbsp;a&nbsp;</em><code>GET &nbsp;/statisticsDay&nbsp;</code> &nbsp; endpoint that returns statistics of&nbsp; appointments per day. Example of json array response:</p>
 
-<li>Insert the &percnt;<code>IDE_NAME</code>&percnt; macro,
-which will be replaced by the actual IDE name.
-For example, <strong>%IDE_NAME%</strong>.</li><br>
+<p><em>Response:</em>&nbsp;<code>200 OK</code></p>
 
-<li>Insert PSI elements, by using links like
-<code>&lt;a href="psi_element://link.to.element"&gt;element description&lt;/a&gt;</code>.
-To get such a link, right-click the class or method
-and select <strong>Copy Reference</strong>.
-Then press &amp;shortcut:EditorPaste;
-to insert the link where appropriate.
-For example, a
-<a href="psi_element://java.lang.String#contains">link to the "contains" method</a>.</li><br>
+<pre>
+<code>[ {
+  "2022-10-15" : 2
+}, {
+  "2022-10-14" : 1
+}, {
+  "2022-10-17" : 1
+} ]</code></pre>
 
-<li>You can add link to file using <strong>full path</strong> like
-  <code><a href="file://lesson1/task1/file.txt">file link</a></code>.
-</li>
-</ul>
-</html>
+<p><strong>Example 2:</strong><em>&nbsp;a&nbsp;</em><code>GET /statisticsDoc&nbsp;&nbsp;</code> &nbsp;endpoint that returns statistics of&nbsp; appointments per doctor. Example of json array response:</p>
+
+<p><em>Response:</em>&nbsp;<code>200 OK</code></p>
+
+<pre>
+<code>[ {
+  "director" : 1
+}, {
+  "lea wong" : 1
+}, {
+  "pamela upperson" : 3
+} ]</code></pre>
+
+<p><strong>Example 3:</strong><em>&nbsp;a&nbsp;</em><code>GET /statisticsDoc&nbsp;&nbsp;</code> &nbsp;if no appoints were set:</p>
+
+<p><em>Response:</em>&nbsp;<code>404 Not Found&nbsp;</code></p>
+
+<pre>
+<code class="language-json">{
+    "timestamp": "2022-10-30T11:15:48.181+00:00",
+    "status": 404,
+    "error": "Not Found",
+    "message": "No message available",
+    "path": "/statisticsDoc"
+}</code></pre>
+
+<p><strong>&nbsp;Example 4:</strong><em>&nbsp;a&nbsp;</em><code>GET /statisticsDay&nbsp;&nbsp;</code> &nbsp;if no appoints were set:</p>
+
+<p><em>Response:</em>&nbsp;<code>404 Not Found&nbsp;</code></p>
+
+<pre>
+<code class="language-json">{
+    "timestamp": "2022-10-30T11:15:48.181+00:00",
+    "status": 404,
+    "error": "Not Found",
+    "message": "No message available",
+    "path": "/statisticsDay"
+}</code></pre>

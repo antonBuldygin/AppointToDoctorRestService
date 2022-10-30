@@ -1,56 +1,239 @@
-<html>
+<h2>Description</h2>
 
-<h2>Task Description: Tips & Tricks</h2>
+<p>In the first stage we have created <code>/setAppointment </code>endpoint which could accept any String data for doctor and date. At this stage let&rsquo;s add option to our program that appointments can be set only for existing doctors in the hospital and in available time.</p>
 
-<p>This is a task description file.
-Its content will be displayed to a learner
-in the <strong>Task Description</strong> window.</p>
+<p>For persistence, put appointments and doctors of the hospital in the database. We recommend you use the H2 database.</p>
 
-<p>It supports both Markdown and HTML.
-To toggle the format, you can rename <strong>task.md</strong>
-to <strong>task.html</strong>, or vice versa.
-The default task description format can be changed
-in <strong>Preferences | Tools | Education</strong>,
-but this will not affect any existing task description files.</p>
+<p>Use the following configuration in your project:</p>
 
-<p>The following features are available in
-<strong>task.md/task.html</strong>
-which are specific to the EduTools plugin:</p>
+<pre>
+<code>spring.datasource.url=jdbc:h2:file:../d
+spring.datasource.driverClassName=org.h2.Driver
+
+spring.jpa.hibernate.ddl-auto=create-drop
+spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
+
+spring.h2.console.enabled=true
+spring.h2.console.settings.trace=false
+spring.h2.console.settings.web-allow-others=false
+
+spring.jpa.show-sql=true</code></pre>
+
+
+<h2>Objectives</h2>
+
+<p>In the second stage, you need to add to your&nbsp; program endpoints that create new doctor, shows all doctors in the hospital and shows schedule of available days for the doctor. Implement three&nbsp;endpoints:&nbsp;&nbsp;</p>
+
+<h3>1. Implement&nbsp;<code>&nbsp;/newDoctor</code>&nbsp; endpoint that handles POST requests to create new doctor and returns information about the doctor.</h3>
+
+<p>A request should contain the following body:</p>
+
+<pre>
+<code class="language-json">{
+    "doctorName": "Lea Wong"
+}</code></pre>
+
+<p>Take these variables and store them for the doctor.&nbsp;</p>
+
+<p>Response body should be JSON object&nbsp; as following example ( doctor and patinet in lower ñase):</p>
+
+<pre>
+<code class="language-json">{
+    "id": 1,
+    "doctorName": "lea wong"
+}</code></pre>
 
 <ul>
-<li>Hints can be added anywhere in the task text.
-Type "hint" and press Tab.
-Hints should be added to an empty line in the task text.
-In hints you can use both HTML and Markdown.
-<div class="hint">Text of your hint</div></li>
-
-<li>You may need to refer your learners to a particular lesson,
-task, or file. To achieve this, you can use the in-course links.
-Specify the path using the <code>&lt;a href="course://lesson1/task1/file1"&gt;
-link_text&lt;/a&gt;</code> format.</li><br>
-
-<li>You can insert shortcuts in the task description.
-While <strong>task.html/task.md</strong> is open,
-right-click anywhere on the <strong>Editor</strong> tab
-and choose the <strong>Insert shortcut</strong> option
-from the context menu.
-For example: &amp;shortcut:FileStructurePopup;.</li><br>
-
-<li>Insert the &percnt;<code>IDE_NAME</code>&percnt; macro,
-which will be replaced by the actual IDE name.
-For example, <strong>%IDE_NAME%</strong>.</li><br>
-
-<li>Insert PSI elements, by using links like
-<code>&lt;a href="psi_element://link.to.element"&gt;element description&lt;/a&gt;</code>.
-To get such a link, right-click the class or method
-and select <strong>Copy Reference</strong>.
-Then press &amp;shortcut:EditorPaste;
-to insert the link where appropriate.
-For example, a
-<a href="psi_element://java.lang.String#contains">link to the "contains" method</a>.</li><br>
-
-<li>You can add link to file using <strong>full path</strong> like
-  <code><a href="file://lesson1/task1/file.txt">file link</a></code>.
-</li>
+    <li>where name &quot;idApp&quot; is paired with value of unique id assigned to the doctor in Number format,</li>
+    <li>name &quot;doctorName&quot; is paired with value of doctor name which was in the request body and stored in databse with mentioned idApp in String format in lower case;</li>
 </ul>
-</html>
+
+<p>The endpoint should return&nbsp;Response Status Code 200. If doctor already exists or if request body has mistakes e.g. lack of atribute or empty name of doctor the endpoint should return&nbsp;Response Status Code 400.</p>
+
+<h3>2. Implement&nbsp;<code>/allDoctorslist&nbsp;</code> endpoint that handles GET requests and returns the information about all available doctors in the hospital .</h3>
+
+<p>The endpoint do not accept any body or parameters and return JsonArray&nbsp; with&nbsp;&nbsp;<em>all created&nbsp; doctors.&nbsp;</em>The endpoint should return&nbsp;Response Status Code 200 if there is any doctor and &nbsp;Response Status Code 204 if no content.</p>
+
+<p>The response should be as a JSON Array which contains&nbsp; a set of&nbsp; JSON objects. Each&nbsp; JSON object should contain&nbsp; the following&nbsp;name/value pairs:&nbsp;</p>
+
+<ul>
+    <li>where name &quot;idApp&quot; is paired with value of unique id assigned to the doctor in Number format,</li>
+    <li>name &quot;doctorName&quot; is paired with value of doctor name which was in the request body and stored in the database&nbsp;with mentioned idApp in String format;</li>
+</ul>
+
+<pre>
+<code class="language-json">
+[
+    {
+        "id": 1,
+        "doctorName": "lea wong"
+    },
+    {
+        "id": 2,
+        "doctorName": "pamella upperson"
+    }
+]
+</code></pre>
+
+<h3>3. Implement&nbsp;<code>/availableDatesByDoctor?doc={doctorName}</code>&nbsp;endpoint that handles GET requests and returns the information about&nbsp; available days for the doctor.</h3>
+
+<p>Please use one of doctors&#39; names existing in the hospital which you can get from&nbsp;<code>/allDoctorslist&nbsp;</code> endpoint . Use the name&nbsp; as a request parameter.&nbsp;If appointment with requested name&nbsp; exists, show the the available days&nbsp; and&nbsp;&nbsp;return&nbsp;Response Status Code 200.&nbsp;&nbsp;Response body should be JSON Array as following example:</p>
+
+<pre>
+<code class="language-json">[
+    {
+        "avalabletime": "2022-10-31",
+        "booked": false
+    },
+    {
+        "avalabletime": "2022-11-01",
+        "booked": false
+    },
+    {
+        "avalabletime": "2022-11-02",
+        "booked": false
+    },
+    {
+        "avalabletime": "2022-11-03",
+        "booked": false
+    }
+]
+</code></pre>
+
+<p>The endpoint should return&nbsp;Response Status Code 204 if the doctor does not exist in the database.&nbsp;The response should be as a JSON Array which contains&nbsp; a set of&nbsp; JSON objects. Each&nbsp; JSON object should contain&nbsp; the following&nbsp;name/value pairs:&nbsp;</p>
+
+<ul>
+    <li>where name &quot;avalabletime&quot; is paired with value of&nbsp; data in&nbsp; LocalDate&nbsp;format (&quot;yyyy-MM-dd&quot;) ,</li>
+    <li>name &quot;booked&quot; is&nbsp;paired with boolean&nbsp;value . If the date is available the&nbsp; &quot;booked&quot;&nbsp;should be &quot;true&quot;, else &quot;false&quot;;</li>
+</ul>
+
+<p>In our project for simplicity there are should be four&nbsp;available days for doctor appointment (one day for one appointment) staring from next day. &nbsp;</p>
+
+<p>Request and response entity-header&nbsp;<code>Content-Type&nbsp;</code>&nbsp;of all the API endpoints should be equal to&nbsp;<code>application/json&nbsp;</code>&nbsp;.</p>
+
+<h3>Examples</h3>
+
+<p><strong>Example 1:</strong><em>&nbsp;a&nbsp;</em><code>POST /newDoctor</code><em>&nbsp;request</em><br />
+    <em>Request body:</em></p>
+
+<pre>
+<code>{
+    "doctorName": "Lea Wong"
+}</code></pre>
+
+<p><em>Response:</em>&nbsp;<code>200 OK</code></p>
+
+<p><em>Response body:</em></p>
+
+<pre>
+<code class="language-json">{
+ "id": 1,
+ "doctorName": "lea wong"
+}</code></pre>
+
+<p>&nbsp;</p>
+
+<p><strong>&nbsp;Example 2:</strong><em>&nbsp;a&nbsp;</em><code>POST /newDoctor</code><em>request with null &quot;doctor&quot; attribute:</em></p>
+
+<p><em>Request body:</em></p>
+
+<pre>
+<code>{
+
+}</code></pre>
+
+<p><em>Response:</em>&nbsp;<code>400 Bad Request</code></p>
+
+<p><em>Response body:</em></p>
+
+<pre>
+<code>{
+    "timestamp": "2022-10-29T21:19:47.9137458",
+    "status": 400,
+    "error": "Bad Request"
+}</code></pre>
+
+<p><strong>&nbsp;&nbsp;Example 3:</strong><em>&nbsp;a&nbsp;</em><code>POST /setAppointment&nbsp;</code><em>request with empty &quot;doctor&quot; attribute:</em><br />
+    <em>Response body:</em></p>
+
+<pre>
+<code>{
+    "doctorName": "",
+}</code></pre>
+
+<p><em>Response:</em>&nbsp;<code>400 Bad Request</code></p>
+
+<p><em>Response body:</em></p>
+
+<pre>
+<code>{
+    "timestamp": "2022-10-29T18:20:45.143+00:00",
+    "status": 400,
+    "error": "Bad Request",
+}</code></pre>
+
+<p><strong>Example 4:</strong><em>&nbsp;a&nbsp;</em><code>GET &nbsp;/allDoctorslist</code>&nbsp;&nbsp;</p>
+
+<p><em>Response:</em>&nbsp;<code>200 OK</code></p>
+
+<p><em>Response body:</em></p>
+
+<pre>
+<code class="language-json">[
+    {
+        "id": 1,
+        "doctorName": "lea wong"
+    },
+    {
+        "id": 2,
+        "doctorName": "pamella upperson"
+    }
+]</code></pre>
+
+<p><strong>&nbsp;Example 5:</strong><em>&nbsp;a&nbsp;</em><code>GET &nbsp;/availableDatesByDoctor?doc=pamella upperson</code>&nbsp;&nbsp;<em>request</em><br />
+    <em>Response body if doctor exists and no one appointment set for the available days:</em></p>
+
+<pre>
+<code class="language-json">[
+    {
+        "avalabletime": "2022-10-31",
+        "booked": false
+    },
+    {
+        "avalabletime": "2022-11-01",
+        "booked": false
+    },
+    {
+        "avalabletime": "2022-11-02",
+        "booked": false
+    },
+    {
+        "avalabletime": "2022-11-03",
+        "booked": false
+    }
+]</code></pre>
+
+<p><strong>Example 5:</strong><em>&nbsp;a&nbsp;</em><code>GET &nbsp;/availableDatesByDoctor?doc=pamella upperson</code>&nbsp;&nbsp;<em>request</em><br />
+    <em>Response body if doctor exists and appointments set for the available days:</em></p>
+
+<p>&nbsp;</p>
+
+<pre>
+<code class="language-json">[
+    {
+        "avalabletime": "2022-10-31",
+        "booked": true
+    },
+    {
+        "avalabletime": "2022-11-01",
+        "booked": true
+    },
+    {
+        "avalabletime": "2022-11-02",
+        "booked": true
+    },
+    {
+        "avalabletime": "2022-11-03",
+        "booked": true
+    }
+]</code></pre>

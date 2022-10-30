@@ -317,7 +317,7 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
 
             () -> testAvailableDatesByDoctor(director, availableDays, 200),//#63
 
-            () -> testPostApi(setAppointment, directorApp1, 400, "not allowed to ser appointment for director"),
+            () -> testPostApi(setAppointment, directorApp1, 400, "not allowed to set appointment for director"),
             () -> testAvailableDatesByDoctor(pamelaUpperson, availableDays, 200),//#65
 
     };
