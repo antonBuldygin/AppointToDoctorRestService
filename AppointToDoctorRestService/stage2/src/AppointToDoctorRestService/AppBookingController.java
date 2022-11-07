@@ -87,15 +87,16 @@ public class AppBookingController {
     public ResponseEntity<?> deleteAppointment(@RequestParam(required = false) String id) {
         List<Appoint> deleted = appointment.deleteAppointment(id);
         if (deleted.isEmpty()) {
-            return new ResponseEntity<>("id not found to delete", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("The appointment does not exist or was already cancelled", HttpStatus.BAD_REQUEST);
         }
         AppointmentToShow appointmentToShows = getAppointmentToShow(deleted);
         return new ResponseEntity<>(appointmentToShows, HttpStatus.OK);
     }
 
     @PostMapping("/newDoctor")
-    public ResponseEntity<?> addDoctor(@Valid @RequestBody Doctor doc) {
-        doc = appointment.addDoctor(doc);
+    public ResponseEntity<?> addDoctor( @RequestBody Doctor doc) {
+       try{ doc = appointment.addDoctor(doc);}
+       catch (Exception e){ return new ResponseEntity<>("doctor is null", HttpStatus.BAD_REQUEST);}
         if (doc == null) {
             return new ResponseEntity<>("Doctor exists", HttpStatus.BAD_REQUEST);
         }

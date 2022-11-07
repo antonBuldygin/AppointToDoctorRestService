@@ -45,7 +45,12 @@ public class ServiceImpl implements Service {
         if (patient.isPresent()) {
             appointment.setPatient(patient.get());
         }
-
+       try{ if (appointment.getPatient().getPatientName()==null||appointment.getPatient().getPatientName().trim().isEmpty()){ throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+               "Patient is empty");}}
+       catch (Exception e){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Patient is empty");
+        }
         Optional<Appoint> appointIsExist = appointmentRepository
                 .findAppointByDateAndDoctor(appointment.getDate(), appointment.getDoctor());
         if (appointIsExist.isPresent()) {

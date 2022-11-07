@@ -15,17 +15,17 @@ import java.util.Date;
 public class Appointment implements Comparable {
     private long idStatus;
     private long idApp;
-    @NotEmpty
-    @NotNull
+//    @NotEmpty
+//    @NotNull
     private String doctor;
 
-    @NotEmpty
-    @NotNull
+//    @NotEmpty
+//    @NotNull
     private String patient;
 
 
-    @NotNull
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+//    @NotNull
+//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
 
     private LocalDate date;
 

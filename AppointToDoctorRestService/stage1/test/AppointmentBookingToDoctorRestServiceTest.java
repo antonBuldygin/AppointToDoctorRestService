@@ -1,4 +1,4 @@
-import AppointToDoctorRestService.Main;
+import AppointToDoctorRestService.Main1;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -55,7 +55,7 @@ class RequestForTest {
 public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
 
     public AppointmentBookingToDoctorRestServiceTest() {
-        super(Main.class, 28852);
+        super(Main1.class, 28852);
 
     }
 
@@ -168,12 +168,12 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
             // negative tests
 
             () -> testGetApi(appointments, 204, "Wrong Status code"),
-            () -> testPostApi(setAppointment, doctorNameEmpty, 400, "Empty doctorName field!"),
-            () -> testPostApi(setAppointment, noDoctorName, 400, "doctorName field is absent!"),
-            () -> testPostApi(setAppointment, doctorNameSpaces, 400, "doctorName field is absent!"),
-            () -> testPostApi(setAppointment, patientNameEmpty, 400, "Empty patientName field!"),//#5
-            () -> testPostApi(setAppointment, noPatientName, 400, "patientName field is absent!"),
-            () -> testPostApi(setAppointment, patientSpaces, 400, "patientName field is absent!"),
+            () -> testPostApi(setAppointment, doctorNameEmpty, 400, "Empty doctor field!"),
+            () -> testPostApi(setAppointment, noDoctorName, 400, "doctor field is absent!"),
+            () -> testPostApi(setAppointment, doctorNameSpaces, 400, "doctor field is absent!"),
+            () -> testPostApi(setAppointment, patientNameEmpty, 400, "Empty patient field!"),//#5
+            () -> testPostApi(setAppointment, noPatientName, 400, "patient field is absent!"),
+            () -> testPostApi(setAppointment, patientSpaces, 400, "patient field is absent!"),
 
             () -> testPostApi(setAppointment, dateEmpty, 400, "Empty date field!"),
             () -> testPostApi(setAppointment, noDate, 400, "date field is absent!"),
@@ -199,6 +199,8 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
             () -> testGetAllappointments(),//#21
 
             () -> testDeleteAppointment(),//#22
+
+            () -> testDeleteAppointmentApi(400, "Wrong Status code"),
             () -> testGetApi(appointments, 204, "Wrong Status code"),//#23
 
             //deleteAppointemntsCheck
@@ -345,10 +347,7 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
                 return CheckResult.wrong("DELETE /deleteAppointment?id= should return a valid JSON");
             }
 
-//            if (!response.getJson().isJsonArray()) {
-//                return CheckResult.wrong("Wrong object in response, expected array of JSON but was \n" +
-//                        response.getContent().getClass());
-//            }
+
 
             String correctJsonToString = convert(appointmentsCorrectJson.toArray(new String[appointmentsCorrectJson.size()]));
             JsonArray correctJson = getJson(correctJsonToString).getAsJsonArray();
@@ -358,8 +357,6 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
                     .check(isObject()
                             .value("idApp", correctJson.get(i).getAsJsonObject().get("idApp").getAsLong())
                             .value("doctor", correctJson.get(i).getAsJsonObject().get("doctor").getAsString())
-//                            .value("specialization", correctJson.get(i).getAsJsonObject().get("specialization").getAsString())
-//                            .value("doctorId", correctJson.get(i).getAsJsonObject().get("doctorId").getAsLong())
                             .value("patient", correctJson.get(i).getAsJsonObject().get("patient").getAsString())
                             .value("date", correctJson.get(i).getAsJsonObject().get("date").getAsString()));
 
@@ -371,6 +368,25 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
             appointmentsCorrectJson.remove(0);
             idsForAppointments.remove(0);
         }
+        return CheckResult.correct();
+    }
+
+    CheckResult testDeleteAppointmentApi(int status, String message) {
+        HttpResponse response = delete("deleteAppointment?id=" + 110).send();
+        if (response.getStatusCode() != status) {
+            return CheckResult.wrong("DELETE " + "deleteAppointment?id= 11" + " should respond with "
+                    + "status code " + status + ", responded: " + response.getStatusCode() + "\n"
+                    + message + "\n"
+                    + "Response body:\n" + response.getContent() + "\n"
+            );
+        }
+
+        if (response.getStatusCode() == 400 && !response.getContent().contains("The appointment does not exist or was already cancelled")) {
+            return CheckResult.wrong("Expected  response : \"The appointment does not exist or was already cancelled\" but received " +
+                    response.getContent());
+        }
+
+
         return CheckResult.correct();
     }
 }

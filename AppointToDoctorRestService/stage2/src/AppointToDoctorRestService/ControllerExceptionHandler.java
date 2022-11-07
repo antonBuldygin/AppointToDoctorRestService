@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-@ControllerAdvice
+//@ControllerAdvice
 public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
 
         protected ResponseEntity<Object> handleMethodArgumentNotValid(

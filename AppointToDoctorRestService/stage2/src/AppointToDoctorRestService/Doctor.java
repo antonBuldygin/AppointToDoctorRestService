@@ -22,8 +22,8 @@ public class Doctor {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     Long id;
 
-    @NotNull
-    @NotEmpty
+//    @NotNull
+//    @NotEmpty
    private String doctorName;
     @JsonProperty( access = JsonProperty.Access.WRITE_ONLY,value="specialization")
     @Column(name = "specialization")

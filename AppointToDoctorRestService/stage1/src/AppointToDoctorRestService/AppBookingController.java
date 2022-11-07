@@ -37,7 +37,7 @@ public class AppBookingController {
         } catch (NullPointerException e) {
             System.out.println(e.getMessage());
             return new ResponseEntity<>(new ErorrMessage("The appointment does not exist or one of the fields is null!"),
-                    HttpStatus.CONFLICT);
+                    HttpStatus.BAD_REQUEST);
         }
 
         if (res.getDoctor().equals("null") && res.getPatient().equals("null")) {
@@ -50,19 +50,28 @@ public class AppBookingController {
 
 
     @PostMapping("/setAppointment")
-    public ResponseEntity<?> setAppointment(@Valid @RequestBody Appointment app) {
-        int year = app.getDate().getYear();
-        if (year == 0) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Most probably Date is empty. ");
+    public ResponseEntity<?> setAppointment(@RequestBody Appointment app) {
+        int year = 0;
+        try {
+            year = app.getDate().getYear();
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Date is null");
         }
 
+        try {
+            if (app.getDoctor() == null || app.getPatient() == null) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Doctor or Patient is null");
+            }
+
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Doctor or Patient is null");
+        }
         if (app.getDoctor().trim().isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "doctor field is absent!");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "doctor field is empty!");
         }
         if (app.getPatient().trim().isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "patient field is absent!");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "patient field is empty!");
         }
-
         Appointment res = new Appointment();
         try {
             res = appointment.setAppointment(app);

@@ -156,8 +156,7 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
 
     private final RequestForTest newDocLeaWong = new RequestForTest().setProps("doctor", leaWong)
             .setProps("patient", "Bol it")
-            .setProps("date", dateTimeFormatter.format(date));
-
+            .setProps("date", dateTimeFormatter.format(date.plusDays(4)));
 
 
     private final String doctorNameEmpty = new RequestForTest(newDocLeaWong).setProps("doctor", "").toJson();
@@ -175,7 +174,7 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
     private final String doctorLeaWong = new RequestForTest().setProps("doctorName", leaWong).toJson();
     private final String doctorPamelaUpperson = new RequestForTest().setProps("doctorName", pamelaUpperson).toJson();
     private final String doctorDrHouse = new RequestForTest().setProps("doctorName", doctorHouse).toJson();
-    private final String docDirector = new RequestForTest().setProps("doctorName",director).toJson();
+    private final String docDirector = new RequestForTest().setProps("doctorName", director).toJson();
     private final String doctorAddEmptyName = new RequestForTest().setProps("doctorName", "").toJson();
     private final String doctorAddNull = new RequestForTest().toJson();
     private final String doctorAddEmptySpaces = new RequestForTest().setProps("doctorName", "         ").toJson();
@@ -224,14 +223,6 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
             // negative tests for  available days Api
             () -> testGetApi(availbleDates + unknownDoctor.trim().replaceAll("[\\s]+", "%20"), 204, "should answer status 204 - no available time for unknown doctor "),
 
-            // negative tests for appointments, setAppointment Api
-            () -> testPostApi(setAppointment, patientNameEmpty, 400, "Empty patientName field!"),//#10
-            () -> testPostApi(setAppointment, noPatientName, 400, "patientName field is absent!"),
-            () -> testPostApi(setAppointment, patientSpaces, 400, "patientName field is absent!"),
-            () -> testPostApi(setAppointment, dateEmpty, 400, "Empty date field!"),
-            () -> testPostApi(setAppointment, noDate, 400, "date field is absent!"),
-            () -> testGetApi(appointments, 204, "Wrong Status code"),//#15
-            () -> testPostApi(setAppointment, wrongDateFormat, 400, "patientName field is absent!"),
 
             // negative tests for  available days Api
             () -> testAvailableDatesByDoctor(leaWong, availableDays, 204),//#17
@@ -242,6 +233,14 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
             () -> testAvailableDatesByDoctor(leaWong, availableDays, 200), //#20
             () -> getAllDoctorslist(),//#21
 
+            // negative tests for appointments, setAppointment Api (patients and dates)
+            () -> testPostApi(setAppointment, patientNameEmpty, 400, "Empty patientName field!"),//#10
+            () -> testPostApi(setAppointment, noPatientName, 400, "patientName field is absent!"),
+            () -> testPostApi(setAppointment, patientSpaces, 400, "patientName field is absent!"),
+            () -> testPostApi(setAppointment, dateEmpty, 400, "Empty date field!"),
+            () -> testPostApi(setAppointment, noDate, 400, "date field is absent!"),
+            () -> testGetApi(appointments, 204, "Wrong Status code"),//#15
+            () -> testPostApi(setAppointment, wrongDateFormat, 400, "patientName field is absent!"),
 
             () -> testAvailableDatesByDoctor(director, availableDays, 204),//#22
             () -> testAvailableDatesByDoctor(leaWong, availableDays, 200),//#23
@@ -296,7 +295,8 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
             //checking deleteAppointment endPoints
             () -> testDeleteAppointment(),//#51
             () -> testGetApi(appointments, 204, "Wrong Status code"),//#52
-            () -> testDeleteAppointment(),//#53
+            () -> testDeleteAppointmentApi(400, "Wrong Status code"),//#53
+
             () -> testGetApi(appointments, 204, "Wrong Status code"),//#54
 
             //checking update of available days for doctors after  deleteAppointments
@@ -907,6 +907,25 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
             appointmentsCorrectJson.remove(0);
             idsForAppointments.remove(0);
         }
+        return CheckResult.correct();
+    }
+
+    CheckResult testDeleteAppointmentApi(int status, String message) {
+        HttpResponse response = delete("deleteAppointment?id=" + 11).send();
+        if (response.getStatusCode() != status) {
+            return CheckResult.wrong("DELETE " + "deleteAppointment?id= 11" + " should respond with "
+                    + "status code " + status + ", responded: " + response.getStatusCode() + "\n"
+                    + message + "\n"
+                    + "Response body:\n" + response.getContent() + "\n"
+            );
+        }
+
+        if (response.getStatusCode() == 400 && !response.getContent().contains("The appointment does not exist or was already cancelled")) {
+            return CheckResult.wrong("Expected  response : \"The appointment does not exist or was already cancelled\" but received " +
+                    response.getContent());
+        }
+
+
         return CheckResult.correct();
     }
 }

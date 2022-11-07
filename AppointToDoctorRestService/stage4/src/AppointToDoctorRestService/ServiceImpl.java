@@ -68,6 +68,12 @@ public class ServiceImpl implements Service {
         }
         foundAvailableDates.setBooked(true);
 
+        try{ if (appointment.getPatient().getPatientName()==null||appointment.getPatient().getPatientName().trim().isEmpty()){ throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                "Patient is empty");}}
+        catch (Exception e){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Patient is empty");
+        }
         patientRepository.save(appointment.getPatient());
         appointmentRepository.save(appointment);
 

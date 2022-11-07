@@ -161,7 +161,7 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
 
     private final RequestForTest newDocLeaWong = new RequestForTest().setProps("doctor", leaWong)
             .setProps("patient", "Bol it")
-            .setProps("date", dateTimeFormatter.format(date));
+            .setProps("date", dateTimeFormatter.format(date.plusDays(4)));
 
     private final String doctorNameEmpty = new RequestForTest(newDocLeaWong).setProps("doctor", "").toJson();
     private final String doctorNameSpaces = new RequestForTest(newDocLeaWong).setProps("doctor", "   ").toJson();
@@ -226,24 +226,27 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
 
             // negative tests
 
-            () -> testPostApi(setAppointment, patientNameEmpty, 400, "Empty patientName field!"),//#10
-            () -> testPostApi(setAppointment, noPatientName, 400, "patientName field is absent!"),
-            () -> testPostApi(setAppointment, patientSpaces, 400, "patientName field is absent!"),
 
-            () -> testPostApi(setAppointment, dateEmpty, 400, "Empty date field!"),
-            () -> testPostApi(setAppointment, noDate, 400, "date field is absent!"),
-            () -> testGetApi(appointments, 204, "Wrong Status code"),//#15
+            () -> testGetApi(appointments, 204, "Wrong Status code"),//#10
             () -> testGetApi(statisticsDoctor, 204, "Wrong Status code"),
             () -> testGetApi(statisticsDay, 204, "Wrong Status code"),
 
             () -> testPostApi(setAppointment, wrongDateFormat, 400, "wrong date format!"),
 
             //positive check of Doctors endpoints
-            () -> testAvailableDatesByDoctor(leaWong, availableDays, 204),//#19
-            () -> newDoctorEndpointCheck(doctorLeaWong),//#20
+            () -> testAvailableDatesByDoctor(leaWong, availableDays, 204),//#14
+            () -> newDoctorEndpointCheck(doctorLeaWong),//#15
             () -> testPostApi(newDoctor, doctorLeaWong, 400, "Should not add new doctor with the same name"),
-            () -> testAvailableDatesByDoctor(leaWong, availableDays, 200), //#22
-            () -> getAllDoctorslist(),//#23
+            () -> testAvailableDatesByDoctor(leaWong, availableDays, 200), //#17
+            () -> getAllDoctorslist(),//#18
+
+            () -> testPostApi(setAppointment, patientNameEmpty, 400, "Empty patientName field!"),//#19
+            () -> testPostApi(setAppointment, noPatientName, 400, "patientName field is absent!"),
+            () -> testPostApi(setAppointment, patientSpaces, 400, "patientName field is absent!"),
+
+            () -> testPostApi(setAppointment, dateEmpty, 400, "Empty date field!"),
+            () -> testPostApi(setAppointment, noDate, 400, "date field is absent!"),
+
             () -> testDeleteDoctor(deleteDoctor, leaWong, 200, "should delete doctor"),
             () -> getAllDoctorslist(),//#25
 
@@ -289,29 +292,30 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
             () -> testGetApi(appointments, 204, "Wrong Status code"),//#58
 
             () -> testDeleteAppointment(),//#59
+            () -> testDeleteAppointmentApi(400, "Wrong Status code"),//#60
 
-            () -> testAvailableDatesByDoctor(leaWong, availableDays, 200),//#60
-            () -> testAvailableDatesByDoctor(pamelaUpperson, availableDays, 200),//#61
+            () -> testAvailableDatesByDoctor(leaWong, availableDays, 200),//#61
+            () -> testAvailableDatesByDoctor(pamelaUpperson, availableDays, 200),//#62
 
 //            () -> testGetStatisticPerDay(statisticsDay), //#68
 
-            () -> testPostSetAppointments(pamelaUppersonApp1),//#62
-            () -> testPostSetAppointments(pamelaUppersonApp2),//#63
-            () -> testPostSetAppointments(pamelaUppersonApp3),//#64
+            () -> testPostSetAppointments(pamelaUppersonApp1),//#63
+            () -> testPostSetAppointments(pamelaUppersonApp2),//#64
+            () -> testPostSetAppointments(pamelaUppersonApp3),//#65
 
-            () -> testGetStatisticPerDay(statisticsDay), //#65
+            () -> testGetStatisticPerDay(statisticsDay), //#66
 
-            () -> testDeleteDoctor(deleteDoctor, pamelaUpperson, 200, "should delete doctor"),//#66
-            () -> testGetAllappointments(),//#67
+            () -> testDeleteDoctor(deleteDoctor, pamelaUpperson, 200, "should delete doctor"),//#67
+            () -> testGetAllappointments(),//#68
 
-            () -> testPostSetAppointments(leaWongApp1),//#68
-            () -> testAvailableDatesByDoctor(leaWong, availableDays, 200),//#69
-            () -> testGetStatisticPerDay(statisticsDay), //#70
+            () -> testPostSetAppointments(leaWongApp1),//#69
+            () -> testAvailableDatesByDoctor(leaWong, availableDays, 200),//#70
+            () -> testGetStatisticPerDay(statisticsDay), //#71
 
             () -> testAvailableDatesByDoctor("director", availableDays, 200),
-            () -> testAvailableDatesByDoctor(pamelaUpperson, availableDays, 204),//#72
+            () -> testAvailableDatesByDoctor(pamelaUpperson, availableDays, 204),//#73
 
-            () -> testGetStatisticPerDoctor(statisticsDoctor),//#73
+            () -> testGetStatisticPerDoctor(statisticsDoctor),//#74
 
             () -> testPostApi(setAppointment, directorApp1, 400, "not allowed to set appointment for director"),
             () -> testPostApi(newDoctor, docDirector, 400, "Should not add new doctor with the same name"),
@@ -319,28 +323,29 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
             () -> testDeleteDoctor(deleteDoctor, leaWong, 200, "should delete doctor"),
             () -> testPostSetAppointments(drHouse),
 
-            () -> testAvailableDatesByDoctor(doctorHouse, availableDays, 200),//#78
-            () -> testGetAllappointments(),//#79
+            () -> testAvailableDatesByDoctor(doctorHouse, availableDays, 200),//#79
+            () -> testGetAllappointments(),//#80
 
-            () -> testGetStatisticPerDay(statisticsDay), //#80
-            () -> testGetStatisticPerDoctor(statisticsDoctor),//#81
+            () -> testGetStatisticPerDay(statisticsDay), //#81
+            () -> testGetStatisticPerDoctor(statisticsDoctor),//#82
 
-            () -> testDeleteDoctor(deleteDoctor, director, 200, "should delete  director"),//#82
-            () -> testGetAllappointments(),//#83
-            () -> testAvailableDatesByDoctor(director, availableDays, 204),//#84
+            () -> testDeleteDoctor(deleteDoctor, director, 200, "should delete  director"),//#83
+            () -> testGetAllappointments(),//#84
+            () -> testAvailableDatesByDoctor(director, availableDays, 204),//#85
 
-            () -> testGetStatisticPerDoctor(statisticsDoctor),//#85
-            () -> testGetStatisticPerDay(statisticsDay),//#86
+            () -> testGetStatisticPerDoctor(statisticsDoctor),//#86
+            () -> testGetStatisticPerDay(statisticsDay),//#87
 
-            () -> newDoctorEndpointCheck(docDirector),//#87
-            () -> testAvailableDatesByDoctor(director, availableDays, 200),//#88
+            () -> newDoctorEndpointCheck(docDirector),//#88
+            () -> testAvailableDatesByDoctor(director, availableDays, 200),//#89
 
-            () -> testDeleteDoctor(deleteDoctor, doctorHouse, 200, "should delete  doctor"),//#89
-            () -> testDeleteDoctor(deleteDoctor, director, 200, "should delete  director"),//#90
+            () -> testDeleteDoctor(deleteDoctor, doctorHouse, 200, "should delete  doctor"),//#90
+            () -> testDeleteDoctor(deleteDoctor, director, 200, "should delete  director"),//#91
+            () -> testDeleteDoctor(deleteDoctor, director, 400, "should delete  director"),//#92
 
-            () -> testGetApi(appointments, 204, "Wrong Status code"),//#91
-            () -> testGetApi(statisticsDoctor, 204, "Wrong Status code"),//#92
-            () -> testGetApi(statisticsDay, 204, "Wrong Status code")//#93
+            () -> testGetApi(appointments, 204, "Wrong Status code"),//#92
+            () -> testGetApi(statisticsDoctor, 204, "Wrong Status code"),//#93
+            () -> testGetApi(statisticsDay, 204, "Wrong Status code")//#94
 
 
     };
@@ -658,6 +663,10 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
                     + "Response body:\n" + response.getContent() + "\n"
                     + "Parameter:\n" + param);
         }
+        if (response.getStatusCode() == 400 && !response.getContent().contains("Doctor not found")) {
+            return CheckResult.wrong("Expected  response : \"Doctor not found\" but received " +
+                    response.getContent());
+        }
 
         if (status == 200) {
             JsonElement json;
@@ -973,6 +982,25 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
             appointmentsCorrectJson.remove(0);
             idsForAppointments.remove(0);
         }
+        return CheckResult.correct();
+    }
+
+    CheckResult testDeleteAppointmentApi(int status, String message) {
+        HttpResponse response = delete("deleteAppointment?id=" + 110).send();
+        if (response.getStatusCode() != status) {
+            return CheckResult.wrong("DELETE " + "deleteAppointment?id= 11" + " should respond with "
+                    + "status code " + status + ", responded: " + response.getStatusCode() + "\n"
+                    + message + "\n"
+                    + "Response body:\n" + response.getContent() + "\n"
+            );
+        }
+
+        if (response.getStatusCode() == 400 && !response.getContent().contains("The appointment does not exist or was already cancelled")) {
+            return CheckResult.wrong("Expected  response : \"The appointment does not exist or was already cancelled\" but received " +
+                    response.getContent());
+        }
+
+
         return CheckResult.correct();
     }
 }
