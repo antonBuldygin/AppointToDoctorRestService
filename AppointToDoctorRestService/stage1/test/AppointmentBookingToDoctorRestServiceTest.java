@@ -222,7 +222,8 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
         if (response.getStatusCode() != 200) {
             return CheckResult.wrong("POST /setAppointment should respond with " +
                     "status code 200, responded: " + response.getStatusCode() + "\n\n" +
-                    "Response body:\n" + response.getContent());
+                    "Response body:\n" + response.getContent()+ "\n"
+                    + "Request body:\n" + appBody);
         }
 
         JsonElement json;
@@ -278,7 +279,7 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
         }
 
         if (!response.getJson().isJsonArray()) {
-            return CheckResult.wrong("Wrong object in response, expected array of JSON but was \n" +
+            return CheckResult.wrong("GET /appointments. Wrong object in response, expected array of JSON but was \n" +
                     response.getContent().getClass());
         }
 
