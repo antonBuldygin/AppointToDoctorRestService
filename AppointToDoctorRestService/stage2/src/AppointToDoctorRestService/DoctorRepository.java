@@ -2,11 +2,12 @@ package AppointToDoctorRestService;
 
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import javax.print.Doc;
 import java.util.Optional;
 
-@Component
+@Repository
 public interface DoctorRepository extends CrudRepository<Doctor, Long> {
 
    Optional<Doctor> findDoctorByDoctorName(String doc);

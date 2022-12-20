@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -79,6 +81,18 @@ public class AppBookingController {
         if (doctor.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
+//
+        List<Map<String, String>> doctors = new ArrayList<>();
+
+        for (int i = 0; i < 4; i++) {
+
+
+            Map<String, String> check = new HashMap<>();
+            check.put("booked", "aasas");
+            check.put("availableTime", "false");
+
+            doctors.add(check);}
+    //
         return new ResponseEntity<>(doctor, HttpStatus.OK);
     }
 

@@ -78,6 +78,18 @@ public class AppBookingController {
         if (doctor.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
+
+        //
+        List<Map<String, String>> doctors = new ArrayList<>();
+
+        for (int i = 0; i < 4; i++) {
+
+
+        Map<String, String> check = new HashMap<>();
+        check.put("sdd", "aasas");
+
+        doctors.add(check);}
+        //
         return new ResponseEntity<>(doctor, HttpStatus.OK);
     }
 

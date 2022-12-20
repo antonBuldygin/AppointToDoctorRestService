@@ -59,7 +59,7 @@ public class ServiceImpl implements Service {
         }
 
         Iterable<AvailableDates> availableDates = availableDatesRepository
-                .findAvailableDatesByAvalabletimeAndBookedAndDoctor(appointment.getDate(), false, doc.get());
+                .findAvailableDatesByAvailabletimeAndBookedAndDoctor(appointment.getDate(), false, doc.get());
         List<AvailableDates> requestedDates = new ArrayList<>();
         availableDates.forEach(requestedDates::add);
 
@@ -125,11 +125,11 @@ public class ServiceImpl implements Service {
             if (!appointList1.isEmpty()) {
 
                 Optional<AvailableDates> maxdate = appointList1.stream()
-                        .max(Comparator.comparing(AvailableDates::getAvalabletime));
+                        .max(Comparator.comparing(AvailableDates::getAvailabletime));
 
                 if (maxdate.isPresent()) {
                     Period duration = Period
-                            .between(today, maxdate.get().getAvalabletime());
+                            .between(today, maxdate.get().getAvailabletime());
 
                     days = duration.getDays() + 2;
 
@@ -144,7 +144,7 @@ public class ServiceImpl implements Service {
                 doctorToUpdate.setAvailableDatesSet(appointList1);
                 doctorRepository.save(doctorToUpdate);
 
-                return appointList1.stream().sorted(Comparator.comparing(AvailableDates::getAvalabletime)).collect(Collectors.toList());
+                return appointList1.stream().sorted(Comparator.comparing(AvailableDates::getAvailabletime)).collect(Collectors.toList());
 
             } else for (int i = 1; i <= daysToSchedule; i++) {
                 AvailableDates availableDates = new AvailableDates(today.plusDays(i), false, doctorToUpdate);
@@ -159,7 +159,7 @@ public class ServiceImpl implements Service {
             return appointList1
                     .stream()
                     .sorted(Comparator
-                            .comparing(AvailableDates::getAvalabletime))
+                            .comparing(AvailableDates::getAvailabletime))
                     .collect(Collectors.toList());
 //                    doctorToUpdate;
         }
@@ -213,7 +213,7 @@ public class ServiceImpl implements Service {
             Optional<Doctor> first = appointToDelete.stream().map(d -> d.getDoctor()).findFirst();
             if (first.isPresent()) {
                 Optional<AvailableDates> first1 = first.get().getAvailableDatesSet().stream()
-                        .filter(s -> s.getAvalabletime()
+                        .filter(s -> s.getAvailabletime()
                                 .equals(appointToDelete.get(0).getDate())).findFirst();
                 first1.get().setBooked(false);
             }

@@ -8,5 +8,5 @@ import java.time.LocalDateTime;
 public interface AvailableDatesRepository extends CrudRepository<AvailableDates,Long> {
 
 
-    Iterable<AvailableDates> findAvailableDatesByAvalabletimeAndBookedAndDoctor(LocalDate localDateTime, boolean status, Doctor doc);
+    Iterable<AvailableDates> findAvailableDatesByavailabletimeAndBookedAndDoctor(LocalDate localDateTime, boolean status, Doctor doc);
 }

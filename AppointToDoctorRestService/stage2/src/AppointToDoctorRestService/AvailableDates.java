@@ -12,7 +12,7 @@ public class AvailableDates {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private long id;
-    LocalDate avalabletime;
+    LocalDate availabletime;
     @ManyToOne( fetch = FetchType.EAGER)
     @JoinColumn(name = "doctor_id" )
     private Doctor doctor;
@@ -23,22 +23,22 @@ public class AvailableDates {
     }
 
     public AvailableDates(LocalDate avalabletime, boolean booked, Doctor doctor) {
-        this.avalabletime = avalabletime;
+        this.availabletime = avalabletime;
         this.booked = booked;
         this.doctor = doctor;
     }
 
-    public AvailableDates(LocalDate avalabletime, boolean booked) {
-        this.avalabletime = avalabletime;
+    public AvailableDates(LocalDate availabletime, boolean booked) {
+        this.availabletime = availabletime;
         this.booked = booked;
     }
 
-    public LocalDate getAvalabletime() {
-        return avalabletime;
+    public LocalDate getAvailabletime() {
+        return availabletime;
     }
 
-    public void setAvalabletime(LocalDate avalabletime) {
-        this.avalabletime = avalabletime;
+    public void setAvailabletime(LocalDate availabletime) {
+        this.availabletime = availabletime;
     }
 
     public boolean isBooked() {

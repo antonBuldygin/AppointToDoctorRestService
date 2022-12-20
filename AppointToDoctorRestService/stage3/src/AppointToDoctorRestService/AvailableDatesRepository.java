@@ -6,7 +6,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public interface AvailableDatesRepository extends CrudRepository<AvailableDates,Long> {
+//"findAvailableDatesByAvalabletimeAndBookedAndDoctor"
 
-
-    Iterable<AvailableDates> findAvailableDatesByAvalabletimeAndBookedAndDoctor(LocalDate localDateTime, boolean status, Doctor doc);
+    Iterable<AvailableDates> findAvailableDatesByAvailabletimeAndBookedAndDoctor(LocalDate localDateTime, boolean status, Doctor doc);
 }

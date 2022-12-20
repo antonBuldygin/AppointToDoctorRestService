@@ -6,10 +6,14 @@ import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import org.hyperskill.hstest.dynamic.DynamicTest;
 import org.hyperskill.hstest.dynamic.input.DynamicTesting;
+import org.hyperskill.hstest.exception.outcomes.WrongAnswer;
 import org.hyperskill.hstest.mocks.web.response.HttpResponse;
 import org.hyperskill.hstest.stage.SpringTest;
 import org.hyperskill.hstest.testcase.CheckResult;
+import org.junit.Before;
+import org.junit.BeforeClass;
 
+import java.io.File;
 import java.lang.reflect.Type;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -26,6 +30,8 @@ class RequestForTest {
 
 
     private Map<String, Object> properties = new LinkedHashMap<>();
+
+
 
     public RequestForTest(RequestForTest another) {
         this.properties = another.properties.entrySet().stream()
@@ -56,6 +62,9 @@ class RequestForTest {
 }
 
 public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
+
+    private static final String databaseFileName = "\\AppointToDoctorRestService\\AppointToDoctorRestService\\d.mv.db";
+
 
     public AppointmentBookingToDoctorRestServiceTest() {
         super(Main.class, 28852);
@@ -211,7 +220,7 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
             () -> testGetApi(availbleDates + leaWong.trim().replaceAll("[\\s]+", "%20"), 204, "Wrong Status code"),
             () -> testPostApi(newDoctor, doctorAddEmptyName, 400, "Empty doctorName field!"),
             () -> testPostApi(newDoctor, doctorAddNull, 400, "doctorName field is absent!"),
-            () -> testPostApi(newDoctor, doctorAddEmptySpaces, 400, "doctorName field is absent!"),//#5
+            () -> testPostApi(newDoctor, doctorAddEmptySpaces, 400, "doctorName field is absent!"),//#4
 
 
             // negative tests  for appointments, setAppointment Api
@@ -225,21 +234,21 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
 
 
             // negative tests for  available days Api
-            () -> testAvailableDatesByDoctor(leaWong, availableDays, 204),//#17
+            () -> testAvailableDatesByDoctor(leaWong, availableDays, 204),//#10
 
             //checking Doctors endpoints (Lea Wong)
-            () -> newDoctorEndpointCheck(doctorLeaWong),//#18
+            () -> newDoctorEndpointCheck(doctorLeaWong),//#11
             () -> testPostApi(newDoctor, doctorLeaWong, 400, "Should not add new doctor with the same name"),
-            () -> testAvailableDatesByDoctor(leaWong, availableDays, 200), //#20
-            () -> getAllDoctorslist(),//#21
+            () -> testAvailableDatesByDoctor(leaWong, availableDays, 200), //#13
+            () -> getAllDoctorslist(),//#14
 
             // negative tests for appointments, setAppointment Api (patients and dates)
-            () -> testPostApi(setAppointment, patientNameEmpty, 400, "Empty patientName field!"),//#10
+            () -> testPostApi(setAppointment, patientNameEmpty, 400, "Empty patientName field!"),//#15
             () -> testPostApi(setAppointment, noPatientName, 400, "patientName field is absent!"),
             () -> testPostApi(setAppointment, patientSpaces, 400, "patientName field is absent!"),
             () -> testPostApi(setAppointment, dateEmpty, 400, "Empty date field!"),
             () -> testPostApi(setAppointment, noDate, 400, "date field is absent!"),
-            () -> testGetApi(appointments, 204, "Wrong Status code"),//#15
+            () -> testGetApi(appointments, 204, "Wrong Status code"),//#20
             () -> testPostApi(setAppointment, wrongDateFormat, 400, "patientName field is absent!"),
 
             () -> testAvailableDatesByDoctor(director, availableDays, 204),//#22
@@ -258,7 +267,10 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
             () -> newDoctorEndpointCheck(doctorPhilGood),//#29
             () -> testAvailableDatesByDoctor(phillGood, availableDays, 200),//#30
             () -> testPostApi(newDoctor, doctorPhilGood, 400, "Should not add new doctor with the same name"),
+            this::reloadServer,
+
             () -> getAllDoctorslist(), //#32
+            this::reloadServer,
 
             // negative tests for  available days Api for (Pamela Upperson)
             () -> testPostApi(newDoctor, doctorPamelaUpperson, 400, "Should not add new doctor with the same name"),
@@ -274,7 +286,7 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
             () -> testPostSetAppointments(leaWongApp2),//#39
             () -> testPostSetAppointments(leaWongApp3),//#40
             () -> testGetAllappointments(),//#41
-
+            this::reloadServer,
             //checking update of available days
             () -> testAvailableDatesByDoctor(leaWong, availableDays, 200),//#42
             () -> testAvailableDatesByDoctor(pamelaUpperson, availableDays, 200),//#43
@@ -317,7 +329,7 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
 
             () -> testAvailableDatesByDoctor(director, availableDays, 200),//#63
 
-            () -> testPostApi(setAppointment, directorApp1, 400, "not allowed to set appointment for director"),
+//            () -> testPostApi(setAppointment, directorApp1, 400, "not allowed to set appointment for director"),
             () -> testAvailableDatesByDoctor(pamelaUpperson, availableDays, 200),//#65
 
     };
@@ -421,7 +433,7 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
             try {
                 json = response.getJson();
             } catch (Exception ex) {
-                return CheckResult.wrong("GET /availableDatesByDoctor?doc=" + doctorName + " should return a valid JSON");
+                return CheckResult.wrong("GET /availableDatesByDoctor?doc= " + doctorName + " should return a valid JSON");
             }
 
             if (!response.getJson().isJsonArray()) {
@@ -435,14 +447,68 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
 
             JsonArray responseJson = getJson(response.getContent()).getAsJsonArray();
 
+
             if (doctorsList.stream().filter(s -> s.contains(doctorName.trim().toLowerCase())).findAny().isPresent()) {
 
 
                 if (responseJson.size() != avalableDays) {
-                    return CheckResult.wrong("Correct json array size should be" +
+                    return CheckResult.wrong("Correct json array size should be " +
                             avalableDays + "\n" +
                             "Response array size is:\n" + responseJson.size());
                 }
+
+                //
+                Gson gson = new Gson();
+                Type type = new TypeToken<List<Map<String, String>>>() {
+                }.getType();
+                List<Map<String, String>> myMap = gson.fromJson(responseJson, type);
+
+
+
+                for (int i = 0; i < myMap.size(); i++) {
+                    if(myMap.get(i).size()!=2){ return CheckResult.wrong("Wrong. " +
+                            "Response should contain 2 names in each JSON object\n");}
+
+                    for (Map.Entry<String, String> entry : myMap.get(i).entrySet()) {
+                        int countB = 0;
+                        int countA = 0;
+
+                        if (!entry.getKey().equals("booked")) {
+                            countA++;
+                            System.out.println(entry.getKey());
+                            if (!entry.getKey().equals("availabletime")) {
+                                return CheckResult.wrong("Wrong name in JSON object \n"
+                                        + "Expected response: " + "availabletime, " + " responded: " + entry.getKey());
+                            }
+                            if (countA > 1) {
+                                return CheckResult.wrong("Wrong name in JSON object \n"
+                                        + "Expected response: " + "booked, " + " responded: " + entry.getKey());
+                            }
+
+                        }
+
+                        if (!entry.getKey().equals("availabletime")) {
+
+                            countB++;
+                            System.out.println(entry.getKey());
+
+                            if (!entry.getKey().equals("booked")) {
+                                return CheckResult.wrong("Wrong name in JSON object \n"
+                                        + "Expected response: " + "booked, " + " responded: " + entry.getKey());
+                            }
+                            if (countB > 1) {
+                                return CheckResult.wrong("Wrong name in JSON object \n"
+                                        + "Expected response: " + "availabletime, " + " responded: " + entry.getKey());
+                            }
+
+                        }
+
+                    }
+
+                }
+                //
+
+
                 if (mapOfAvailableDaysByDoctor.isEmpty() || mapOfAvailableDaysByDoctor.get(doctorName.trim().toLowerCase()) == null) {
 
                     mapOfAvailableDaysByDoctor.put(doctorName.trim().toLowerCase(), responseJson);
@@ -450,19 +516,19 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
 
                 if (!mapOfAvailableDaysByDoctor.isEmpty() && !mapOfAvailableDaysByDoctor.get(doctorName.trim().toLowerCase()).equals(responseJson)) {
                     return CheckResult.wrong("Wrong object in response, expected array of JSON " + mapOfAvailableDaysByDoctor.get(doctorName.trim().toLowerCase()).toString() +
-                            "but it was" + response.getContent());
+                            " but it was" + response.getContent());
                 }
                 if (!mapOfAvailableDaysByDoctor.isEmpty() && mapOfAvailableDaysByDoctor.get(doctorName.trim().toLowerCase()).equals(responseJson)) {
                     JsonArray correctJson = mapOfAvailableDaysByDoctor.get(doctorName.trim().toLowerCase());
 
                     for (int i = 0; i < responseJson.size(); i++) {
-                        String date = correctJson.get(i).getAsJsonObject().get("avalabletime").getAsString();
+                        String date = correctJson.get(i).getAsJsonObject().get("availabletime").getAsString();
                         boolean booked = correctJson.get(i).getAsJsonObject().get("booked").getAsBoolean();
 //            System.out.println(id);
 
                         expect(responseJson.get(i).getAsJsonObject().toString()).asJson()
                                 .check(isObject()
-                                        .value("avalabletime", date)
+                                        .value("availabletime", date)
                                         .value("booked", booked));
                     }
 
@@ -553,13 +619,13 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
         ) {
             if (entry.getKey().equals(doctor)) {
                 for (int i = 0; i < entry.getValue().size(); i++) {
-                    String avalabletime = entry.getValue().get(i).getAsJsonObject().get("avalabletime").toString().replaceAll("\"", "");
+                    String avalabletime = entry.getValue().get(i).getAsJsonObject().get("availabletime").toString().replaceAll("\"", "");
                     if (avalabletime.equals(date)) {
 
-                        entry.getValue().get(i).getAsJsonObject().addProperty("avalabletime", avalabletime);
+                        entry.getValue().get(i).getAsJsonObject().addProperty("availabletime", avalabletime);
                         entry.getValue().get(i).getAsJsonObject().addProperty("booked", true);
                         System.out.println(entry.getValue().get(i).getAsJsonObject().get("booked"));
-                        System.out.println(entry.getValue().get(i).getAsJsonObject().get("avalabletime"));
+                        System.out.println(entry.getValue().get(i).getAsJsonObject().get("availabletime"));
                     }
                 }
             }
@@ -871,13 +937,13 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
             ) {
                 if (entry.getKey().equals(correctJson.get(i).getAsJsonObject().get("doctor").getAsString())) {
                     for (int m = 0; m < entry.getValue().size(); m++) {
-                        String avalabletime = entry.getValue().get(m).getAsJsonObject().get("avalabletime").toString().replaceAll("\"", "");
+                        String avalabletime = entry.getValue().get(m).getAsJsonObject().get("availabletime").toString().replaceAll("\"", "");
                         if (avalabletime.equals(correctJson.get(i).getAsJsonObject().get("date").getAsString())) {
 
-                            entry.getValue().get(m).getAsJsonObject().addProperty("avalabletime", avalabletime);
+                            entry.getValue().get(m).getAsJsonObject().addProperty("availabletime", avalabletime);
                             entry.getValue().get(m).getAsJsonObject().addProperty("booked", false);
                             System.out.println(entry.getValue().get(m).getAsJsonObject().get("booked"));
-                            System.out.println(entry.getValue().get(m).getAsJsonObject().get("avalabletime"));
+                            System.out.println(entry.getValue().get(m).getAsJsonObject().get("availabletime"));
                         }
                     }
                 }
@@ -927,5 +993,27 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
 
 
         return CheckResult.correct();
+    }
+
+    private CheckResult reloadServer() {
+        try {
+            reloadSpring();
+        } catch (Exception ex) {
+            throw new RuntimeException(ex.getMessage());
+        }
+        return CheckResult.correct();
+    }
+    @Before
+    public  void deleteDatabaseFile() {
+        File file = new File(databaseFileName);
+
+        if (!file.exists()) {
+            return;
+        }
+
+        if (!file.delete()) {
+            throw new WrongAnswer("Can't delete database file before starting your program.\n" +
+                    "Make sure you close all the connections with the database file!");
+        }
     }
 }
