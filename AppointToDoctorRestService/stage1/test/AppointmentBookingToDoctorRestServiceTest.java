@@ -294,7 +294,7 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
         if (responseJson.size() != correctJson.size()) {
             return CheckResult.wrong("Correct json array size should be" +
                     correctJson.size() + "\n\n" +
-                    "Response array size is:\n" + responseJson.size());
+                    "but found:\n" + responseJson.size());
         }
 
 
