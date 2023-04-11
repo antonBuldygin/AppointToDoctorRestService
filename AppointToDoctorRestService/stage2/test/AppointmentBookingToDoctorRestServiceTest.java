@@ -401,7 +401,7 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
         if (responseJson.size() != correctJson.size()) {
             return CheckResult.wrong("Correct json array size should be" +
                     correctJson.size() + "\n\n" +
-                    "Response array size is:\n" + responseJson.size());
+                    "but found:\n" + responseJson.size());
         }
 
         for (int i = 0; i < responseJson.size(); i++) {
@@ -454,7 +454,7 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
                 if (responseJson.size() != avalableDays) {
                     return CheckResult.wrong("Correct json array size should be " +
                             avalableDays + "\n" +
-                            "Response array size is:\n" + responseJson.size());
+                            "but found:\n" + responseJson.size());
                 }
 
                 //
@@ -538,7 +538,7 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
                 if (responseJson.size() != 0) {
                     return CheckResult.wrong("Correct json array size should be 0 " +
                             "\n" +
-                            "Response array size is:\n" + responseJson.size());
+                            "but found:\n" + responseJson.size());
                 }
             }
 
@@ -667,7 +667,7 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
         if (responseJson.size() != correctJson.size()) {
             return CheckResult.wrong("Correct json array size should be" +
                     correctJson.size() + "\n\n" +
-                    "Response array size is:\n" + responseJson.size());
+                    "but found:\n" + responseJson.size());
         }
 
 
