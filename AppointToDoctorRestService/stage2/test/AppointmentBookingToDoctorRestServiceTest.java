@@ -65,6 +65,9 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
 
     private static final String databaseFileName = "\\AppointToDoctorRestService\\AppointToDoctorRestService\\d.mv.db";
 
+     public AppointmentBookingToDoctorRestServiceTest (){
+        super(Main.class, "../d.mv.db");
+    }
 
     public AppointmentBookingToDoctorRestServiceTest() {
         super(Main.class, 28852);
