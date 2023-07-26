@@ -1006,17 +1006,17 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
         }
         return CheckResult.correct();
     }
-    @Before
-    public  void deleteDatabaseFile() {
-        File file = new File(databaseFileName);
+    // @Before
+    // public  void deleteDatabaseFile() {
+    //     File file = new File(databaseFileName);
 
-        if (!file.exists()) {
-            return;
-        }
+    //     if (!file.exists()) {
+    //         return;
+    //     }
 
-        if (!file.delete()) {
-            throw new WrongAnswer("Can't delete database file before starting your program.\n" +
-                    "Make sure you close all the connections with the database file!");
-        }
-    }
+    //     if (!file.delete()) {
+    //         throw new WrongAnswer("Can't delete database file before starting your program.\n" +
+    //                 "Make sure you close all the connections with the database file!");
+    //     }
+    // }
 }
