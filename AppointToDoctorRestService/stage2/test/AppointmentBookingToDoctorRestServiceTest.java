@@ -69,10 +69,10 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
         super(Main.class, "../d.mv.db");
     }
 
-    public AppointmentBookingToDoctorRestServiceTest() {
-        super(Main.class, 28852);
+    // public AppointmentBookingToDoctorRestServiceTest() {
+    //     super(Main.class, 28852);
 
-    }
+    // }
 
     public String toJsonStatistics(Map<String, Integer> map) {
         ObjectMapper mapper = new ObjectMapper();
