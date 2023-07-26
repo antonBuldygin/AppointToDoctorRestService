@@ -60,11 +60,15 @@ class RequestForTest {
 
 public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
 
-    private static final String databaseFileName = "\\AppointToDoctorRestService\\AppointToDoctorRestService\\d.mv.db";
+    // private static final String databaseFileName = "\\AppointToDoctorRestService\\AppointToDoctorRestService\\d.mv.db";
 
-    public AppointmentBookingToDoctorRestServiceTest() {
-        super(Main.class, 28852);
+    // public AppointmentBookingToDoctorRestServiceTest() {
+    //     super(Main.class, 28852);
 
+    // }
+
+       public AppointmentBookingToDoctorRestServiceTest (){
+        super(Main.class, "../d.mv.db");
     }
 
     public String toJsonStatistics(Map<String, Integer> map) {
