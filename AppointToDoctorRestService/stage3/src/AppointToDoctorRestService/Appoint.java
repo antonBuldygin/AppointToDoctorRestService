@@ -1,10 +1,12 @@
 package AppointToDoctorRestService;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+//import javax.persistence.*;
+//import javax.validation.constraints.NotEmpty;
+//import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 

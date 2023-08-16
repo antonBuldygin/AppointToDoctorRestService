@@ -1,8 +1,9 @@
 package AppointToDoctorRestService;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.*;
 
-import javax.persistence.*;
+//import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
