@@ -220,7 +220,7 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
     DynamicTesting[] dt = new DynamicTesting[]{
 
             // negative tests for newDoctor, available days Api
-            () -> testGetApi(availbleDates + leaWong.trim().replaceAll("[\\s]+", "%20"), 204, "Wrong Status code"),
+            () -> testGetApi(availbleDates + leaWong.trim().replaceAll("[\\s]+", "%20"), 404, "Wrong Status code"),
             () -> testPostApi(newDoctor, doctorAddEmptyName, 400, "Empty doctorName field!"),
             () -> testPostApi(newDoctor, doctorAddNull, 400, "doctorName field is absent!"),
             () -> testPostApi(newDoctor, doctorAddEmptySpaces, 400, "doctorName field is absent!"),//#4
@@ -233,11 +233,11 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
             () -> testPostApi(setAppointment, doctorNameSpaces, 400, "doctorName field is absent!"),
 
             // negative tests for  available days Api
-            () -> testGetApi(availbleDates + unknownDoctor.trim().replaceAll("[\\s]+", "%20"), 204, "should answer status 204 - no available time for unknown doctor "),
+            () -> testGetApi(availbleDates + unknownDoctor.trim().replaceAll("[\\s]+", "%20"), 404, "should answer status 204 - no available time for unknown doctor "),
 
 
             // negative tests for  available days Api
-            () -> testAvailableDatesByDoctor(leaWong, availableDays, 204),//#10
+            () -> testAvailableDatesByDoctor(leaWong, availableDays, 404),//#10
 
             //checking Doctors endpoints (Lea Wong)
             () -> newDoctorEndpointCheck(doctorLeaWong),//#11
@@ -254,7 +254,7 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
             () -> testGetApi(appointments, 204, "Wrong Status code"),//#20
             () -> testPostApi(setAppointment, wrongDateFormat, 400, "patientName field is absent!"),
 
-            () -> testAvailableDatesByDoctor(director, availableDays, 204),//#22
+            () -> testAvailableDatesByDoctor(director, availableDays, 404),//#22
             () -> testAvailableDatesByDoctor(leaWong, availableDays, 200),//#23
 
             () -> testPostApi(newDoctor, doctorLeaWong, 400, "Should not add new doctor with the same name"),//#24
