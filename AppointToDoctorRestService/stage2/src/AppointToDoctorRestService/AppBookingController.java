@@ -80,7 +80,7 @@ public class AppBookingController {
 
         List<AvailableDates> doctor = appointment.availableDatesByDoctor(doc);
         if (doctor.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 //
         List<Map<String, String>> doctors = new ArrayList<>();
