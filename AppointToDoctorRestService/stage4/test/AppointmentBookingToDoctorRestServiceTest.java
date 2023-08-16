@@ -221,7 +221,7 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
     DynamicTesting[] dt = new DynamicTesting[]{
 
             // negative tests
-            () -> testGetApi(availbleDates + leaWong.trim().replaceAll("[\\s]+", "%20"), 204, "Wrong Status code"),
+            () -> testGetApi(availbleDates + leaWong.trim().replaceAll("[\\s]+", "%20"), 404, "Wrong Status code"),
             () -> testGetApi(appointments, 204, "Wrong Status code"),
             () -> testPostApi(newDoctor, doctorAddEmptyName, 400, "Empty doctorName field!"),
             () -> testPostApi(newDoctor, doctorAddNull, 400, "doctorName field is absent!"),
@@ -231,7 +231,7 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
             () -> testPostApi(setAppointment, doctorNameEmpty, 400, "Empty doctorName field!"),
             () -> testPostApi(setAppointment, noDoctorName, 400, "doctorName field is absent!"),
             () -> testPostApi(setAppointment, doctorNameSpaces, 400, "doctorName field is absent!"),
-            () -> testGetApi(availbleDates + unknownDoctor.trim().replaceAll("[\\s]+", "%20"), 204, "should answer status 204 - no available time for unknown doctor "),
+            () -> testGetApi(availbleDates + unknownDoctor.trim().replaceAll("[\\s]+", "%20"), 404, "should answer status 204 - no available time for unknown doctor "),
 
             // negative tests
 
@@ -243,7 +243,7 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
             () -> testPostApi(setAppointment, wrongDateFormat, 400, "wrong date format!"),
 
             //positive check of Doctors endpoints
-            () -> testAvailableDatesByDoctor(leaWong, availableDays, 204),//#14
+            () -> testAvailableDatesByDoctor(leaWong, availableDays, 404),//#14
             () -> newDoctorEndpointCheck(doctorLeaWong),//#15
             () -> testPostApi(newDoctor, doctorLeaWong, 400, "Should not add new doctor with the same name"),
             () -> testAvailableDatesByDoctor(leaWong, availableDays, 200), //#17
@@ -262,7 +262,7 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
             () -> getAllDoctorslist(),//#25
 
             () -> testAvailableDatesByDoctor("director", availableDays, 200),//#26
-            () -> testAvailableDatesByDoctor(leaWong, availableDays, 204),//#27
+            () -> testAvailableDatesByDoctor(leaWong, availableDays, 404),//#27
             () -> newDoctorEndpointCheck(doctorLeaWong),//#28
             () -> testAvailableDatesByDoctor(leaWong, availableDays, 200),//#29
             () -> newDoctorEndpointCheck(doctorPamelaUpperson),//#30
@@ -325,7 +325,7 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
             () -> testGetStatisticPerDay(statisticsDay), //#73
 
             () -> testAvailableDatesByDoctor("director", availableDays, 200), //#74
-            () -> testAvailableDatesByDoctor(pamelaUpperson, availableDays, 204),//#75
+            () -> testAvailableDatesByDoctor(pamelaUpperson, availableDays, 404),//#75
 
             () -> testGetStatisticPerDoctor(statisticsDoctor),//#76
 
@@ -343,7 +343,7 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
 
             () -> testDeleteDoctor(deleteDoctor, director, 200, "should delete  director"),//#83
             () -> testGetAllappointments(),//#84
-            () -> testAvailableDatesByDoctor(director, availableDays, 204),//#85
+            () -> testAvailableDatesByDoctor(director, availableDays, 404),//#85
 
             () -> testGetStatisticPerDoctor(statisticsDoctor),//#86
             () -> testGetStatisticPerDay(statisticsDay),//#87
