@@ -216,102 +216,110 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
     DynamicTesting[] dt = new DynamicTesting[]{
 
             // negative tests
-            () -> testGetApi(availbleDates + leaWong.trim().replaceAll("[\\s]+", "%20"), 404, "Wrong Status code"),
-            () -> testGetApi(appointments, 204, "Wrong Status code"),
-            () -> testPostApi(newDoctor, doctorAddEmptyName, 400, "Empty doctorName field!"),
-            () -> testPostApi(newDoctor, doctorAddNull, 400, "doctorName field is absent!"),
+            () -> testGetApi(availbleDates + leaWong.trim().replaceAll("[\\s]+",
+                    "%20"), 404, "Wrong Status code"),//#1
+            () -> testGetApi(appointments, 204, "Wrong Status code"),//#2
+            () -> testPostApi(newDoctor, doctorAddEmptyName, 400, "Empty doctorName field!"),//#3
+            () -> testPostApi(newDoctor, doctorAddNull, 400, "doctorName field is absent!"),//#4
             () -> testPostApi(newDoctor, doctorAddEmptySpaces, 400, "doctorName field is absent!"),//#5
-            () -> testPostApi(setAppointment, doctorNameEmpty, 400, "Empty doctorName field!"),
-            () -> testPostApi(setAppointment, noDoctorName, 400, "doctorName field is absent!"),
-            () -> testPostApi(setAppointment, doctorNameSpaces, 400, "doctorName field is absent!"),
-            () -> testGetApi(availbleDates + unknownDoctor.trim().replaceAll("[\\s]+", "%20"), 404, "should answer status 204 - no available time for unknown doctor "),
+            () -> testPostApi(setAppointment, doctorNameEmpty, 400, "Empty doctorName field!"),//#6
+            () -> testPostApi(setAppointment, noDoctorName, 400, "doctorName field is absent!"),//#7
+            () -> testPostApi(setAppointment, doctorNameSpaces, 400, "doctorName field is absent!"),//#8
+            () -> testGetApi(availbleDates + unknownDoctor.trim().replaceAll("[\\s]+", "%20"),
+                    404, "should answer status 204 - no available time for unknown doctor "),//#9
 
 
             //positive check of Doctors endpoints
             () -> testAvailableDatesByDoctor(leaWong, availableDays, 404),//#10
             () -> newDoctorEndpointCheck(doctorLeaWong),//#11
-            () -> testPostApi(newDoctor, doctorLeaWong, 400, "Should not add new doctor with the same name"),
+            () -> testPostApi(newDoctor, doctorLeaWong, 400,
+                    "Should not add new doctor with the same name"),//#12
             () -> testAvailableDatesByDoctor(leaWong, availableDays, 200), //#13
             () -> getAllDoctorslist(),//#14
 
             // negative tests for appointments, setAppointment Api (patients and dates)
             () -> testPostApi(setAppointment, patientNameEmpty, 400, "Empty patientName field!"),//#15
-            () -> testPostApi(setAppointment, noPatientName, 400, "patientName field is absent!"),
-            () -> testPostApi(setAppointment, patientSpaces, 400, "patientName field is absent!"),
+            () -> testPostApi(setAppointment, noPatientName, 400, "patientName field is absent!"),//#16
+            () -> testPostApi(setAppointment, patientSpaces, 400, "patientName field is absent!"),//#17
 
-            () -> testPostApi(setAppointment, dateEmpty, 400, "Empty date field!"),
-            () -> testPostApi(setAppointment, noDate, 400, "date field is absent!"),
+            () -> testPostApi(setAppointment, dateEmpty, 400, "Empty date field!"),//#18
+            () -> testPostApi(setAppointment, noDate, 400, "date field is absent!"),//#19
             () -> testGetApi(appointments, 204, "Wrong Status code"),//#20
-            () -> testPostApi(setAppointment, wrongDateFormat, 400, "patientName field is absent!"),
+            () -> testPostApi(setAppointment, wrongDateFormat, 400, "patientName field is absent!"),//#21
 
 
-            () -> testDeleteDoctor(deleteDoctor, leaWong, 200, "should delete doctor"),
+            () -> testDeleteDoctor(deleteDoctor, leaWong, 200, "should delete doctor"),//#22
             () -> getAllDoctorslist(),//#23
             () -> testAvailableDatesByDoctor("director", availableDays, 200),//#24
             () -> testAvailableDatesByDoctor(leaWong, availableDays, 404),//#25
             () -> newDoctorEndpointCheck(doctorLeaWong),//#26
             () -> testAvailableDatesByDoctor(leaWong, availableDays, 200),//#27
             () -> newDoctorEndpointCheck(doctorPamelaUpperson),//#28
-            () -> testPostApi(newDoctor, doctorPamelaUpperson, 400, "Should not add new doctor with the same name"),
+            () -> testPostApi(newDoctor, doctorPamelaUpperson, 400,
+                    "Should not add new doctor with the same name"),//#29
             () -> testDeleteDoctor(deleteDoctor, pamelaUpperson, 200, "should delete doctor"),//#30
 
-            this::reloadServer,
-            () -> getAllDoctorslist(), //#31
+            this::reloadServer,//#31
+            () -> getAllDoctorslist(), //#32
 
-            () -> testDeleteDoctor(deleteDoctor, pamelaUpperson, 400, "should Not delete doctor"),//#32
-            () -> newDoctorEndpointCheck(doctorPamelaUpperson),//#33
-
-
-            () -> newDoctorEndpointCheck(doctorPhilGood),//#34
-            () -> getAllDoctorslist(), //#35
-            () -> testDeleteDoctor(deleteDoctor, phillGood, 200, "should delete doctor"),
-            () -> testPostApi(newDoctor, doctorPamelaUpperson, 400, "Should not add new doctor with the same name"),
-            () -> newDoctorEndpointCheck(doctorDrHouse),//#38
-            () -> testPostApi(newDoctor, doctorDrHouse, 400, "Should not add new doctor with the same name"),
-            () -> getAllDoctorslist(),//#40
-            () -> testPostSetAppointments(leaWongApp1),//#41
-            () -> testPostSetAppointments(leaWongApp2),//#42
-            () -> testPostSetAppointments(leaWongApp3),//#43
-            () -> testGetAllappointments(),//#44
-            () -> testAvailableDatesByDoctor(leaWong, availableDays, 200),//#45
-            () -> testAvailableDatesByDoctor(pamelaUpperson, availableDays, 200),//#46
-            () -> testPostSetAppointments(pamelaUppersonApp1),//#47
-            () -> testPostSetAppointments(pamelaUppersonApp2),//#48
-            () -> testPostSetAppointments(pamelaUppersonApp3),//#49
-            () -> testAvailableDatesByDoctor(doctorHouse, availableDays, 200),//#50
-            () -> testPostSetAppointments(leaWongApp4),//#51
-            () -> testPostSetAppointments(pamelaUppersonApp4),//#52
-            () -> testGetAllappointments(),//#53
+            () -> testDeleteDoctor(deleteDoctor, pamelaUpperson, 400, "should Not delete doctor"),//#33
+            () -> newDoctorEndpointCheck(doctorPamelaUpperson),//#34
 
 
-            () -> testDeleteAppointment(),//#54
-            () -> testGetApi(appointments, 204, "Wrong Status code"),//#55
-            () -> testDeleteAppointment(),//#56
-            () -> testDeleteAppointmentApi(400, "Wrong Status code"),
-            () -> testAvailableDatesByDoctor(leaWong, availableDays, 200),//#58
-            () -> testAvailableDatesByDoctor(pamelaUpperson, availableDays, 200),//#59
+            () -> newDoctorEndpointCheck(doctorPhilGood),//#35
+            () -> getAllDoctorslist(), //#36
+            () -> testDeleteDoctor(deleteDoctor, phillGood, 200, "should delete doctor"),//#37
+            () -> testPostApi(newDoctor, doctorPamelaUpperson, 400,
+                    "Should not add new doctor with the same name"),//#38
+            () -> newDoctorEndpointCheck(doctorDrHouse),//#39
+            () -> testPostApi(newDoctor, doctorDrHouse, 400,
+                    "Should not add new doctor with the same name"),//#40
+            () -> getAllDoctorslist(),//#41
+            () -> testPostSetAppointments(leaWongApp1),//#42
+            () -> testPostSetAppointments(leaWongApp2),//#43
+            () -> testPostSetAppointments(leaWongApp3),//#44
+            () -> testGetAllappointments(),//#45
+            () -> testAvailableDatesByDoctor(leaWong, availableDays, 200),//#46
+            () -> testAvailableDatesByDoctor(pamelaUpperson, availableDays, 200),//#47
+            () -> testPostSetAppointments(pamelaUppersonApp1),//#48
+            () -> testPostSetAppointments(pamelaUppersonApp2),//#49
+            () -> testPostSetAppointments(pamelaUppersonApp3),//#50
+            () -> testAvailableDatesByDoctor(doctorHouse, availableDays, 200),//#51
+            () -> testPostSetAppointments(leaWongApp4),//#52
+            () -> testPostSetAppointments(pamelaUppersonApp4),//#53
+            () -> testGetAllappointments(),//#54
 
 
-            () -> testPostSetAppointments(pamelaUppersonApp1),//#60
-            () -> testPostSetAppointments(pamelaUppersonApp2),//#61
-            () -> testPostSetAppointments(pamelaUppersonApp3),//#62
+            () -> testDeleteAppointment(),//#55
+            () -> testGetApi(appointments, 204, "Wrong Status code"),//#56
+            () -> testDeleteAppointment(),//#57
+            () -> testDeleteAppointmentApi(400, "Wrong Status code"),//#58
+            () -> testAvailableDatesByDoctor(leaWong, availableDays, 200),//#59
+            () -> testAvailableDatesByDoctor(pamelaUpperson, availableDays, 200),//#60
 
 
-            () -> testDeleteDoctor(deleteDoctor, pamelaUpperson, 200, "should delete doctor"),//#62
-            () -> testGetAllappointments(),//#64
-            () -> testPostSetAppointments(leaWongApp1),//#65
-            () -> testAvailableDatesByDoctor(leaWong, availableDays, 200),//#66
+            () -> testPostSetAppointments(pamelaUppersonApp1),//#61
+            () -> testPostSetAppointments(pamelaUppersonApp2),//#62
+            () -> testPostSetAppointments(pamelaUppersonApp3),//#63
 
-            () -> testPostApi(setAppointment, directorApp1, 400, "not allowed to set appointment for director"),
-            () -> testPostApi(newDoctor, docDirector, 400, "Should not add new doctor with the same name"),
-            () -> testDeleteDoctor(deleteDoctor, director, 200, "should delete doctor"),//#68
-            () -> newDoctorEndpointCheck(docDirector),//#70
-            () -> testAvailableDatesByDoctor(director, availableDays, 200),//#71
 
-            this::reloadServer,
-            () -> testAvailableDatesByDoctor("director", availableDays, 200),//#72
-            () -> testAvailableDatesByDoctor(pamelaUpperson, availableDays, 404),//#73
-            () -> testGetAllappointments(),//#74
+            () -> testDeleteDoctor(deleteDoctor, pamelaUpperson, 200, "should delete doctor"),//#64
+            () -> testGetAllappointments(),//#65
+            () -> testPostSetAppointments(leaWongApp1),//#66
+            () -> testAvailableDatesByDoctor(leaWong, availableDays, 200),//#67
+
+            () -> testPostApi(setAppointment, directorApp1, 400,
+                    "not allowed to set appointment for director"),//#68
+            () -> testPostApi(newDoctor, docDirector, 400,
+                    "Should not add new doctor with the same name"),//#69
+            () -> testDeleteDoctor(deleteDoctor, director, 200, "should delete doctor"),//#70
+            () -> newDoctorEndpointCheck(docDirector),//#71
+            () -> testAvailableDatesByDoctor(director, availableDays, 200),//#72
+
+            this::reloadServer,//#73
+            () -> testAvailableDatesByDoctor("director", availableDays, 200),//#74
+            () -> testAvailableDatesByDoctor(pamelaUpperson, availableDays, 404),//#75
+            () -> testGetAllappointments(),//#76
     };
 
     //Test newDoctor POST endPoint
