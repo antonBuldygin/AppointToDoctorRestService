@@ -7,14 +7,26 @@
         <option name="delegatedBuild" value="false" />
         <option name="distributionType" value="WRAPPED" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="gradleJvm" value="temurin-17" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/AppointToDoctorRestService/stage1" />
+            <option value="$PROJECT_DIR$/AppointToDoctorRestService/stage1/out" />
             <option value="$PROJECT_DIR$/AppointToDoctorRestService/stage2" />
+            <option value="$PROJECT_DIR$/AppointToDoctorRestService/stage2/build/classes/java" />
+            <option value="$PROJECT_DIR$/AppointToDoctorRestService/stage2/build/reports/tests" />
+            <option value="$PROJECT_DIR$/AppointToDoctorRestService/stage2/build/test-results" />
+            <option value="$PROJECT_DIR$/AppointToDoctorRestService/stage2/build/tmp" />
             <option value="$PROJECT_DIR$/AppointToDoctorRestService/stage3" />
+            <option value="$PROJECT_DIR$/AppointToDoctorRestService/stage3/build/classes/java" />
+            <option value="$PROJECT_DIR$/AppointToDoctorRestService/stage3/build/reports/tests" />
+            <option value="$PROJECT_DIR$/AppointToDoctorRestService/stage3/build/test-results" />
+            <option value="$PROJECT_DIR$/AppointToDoctorRestService/stage3/build/tmp" />
             <option value="$PROJECT_DIR$/AppointToDoctorRestService/stage4" />
+            <option value="$PROJECT_DIR$/AppointToDoctorRestService/stage4/build/classes/java" />
+            <option value="$PROJECT_DIR$/AppointToDoctorRestService/stage4/build/reports/tests" />
+            <option value="$PROJECT_DIR$/AppointToDoctorRestService/stage4/build/test-results" />
+            <option value="$PROJECT_DIR$/AppointToDoctorRestService/stage4/build/tmp" />
             <option value="$PROJECT_DIR$/util" />
           </set>
         </option>

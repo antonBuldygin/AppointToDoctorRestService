@@ -167,18 +167,18 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
 
             // negative tests
 
-            () -> testGetApi(appointments, 204, "Wrong Status code"),
-            () -> testPostApi(setAppointment, doctorNameEmpty, 400, "Empty doctor field!"),
-            () -> testPostApi(setAppointment, noDoctorName, 400, "doctor field is absent!"),
-            () -> testPostApi(setAppointment, doctorNameSpaces, 400, "doctor field is absent!"),
+            () -> testGetApi(appointments, 204, "Wrong Status code"),//#1
+            () -> testPostApi(setAppointment, doctorNameEmpty, 400, "Empty doctor field!"),//#2
+            () -> testPostApi(setAppointment, noDoctorName, 400, "doctor field is absent!"),//#3
+            () -> testPostApi(setAppointment, doctorNameSpaces, 400, "doctor field is absent!"),//#4
             () -> testPostApi(setAppointment, patientNameEmpty, 400, "Empty patient field!"),//#5
-            () -> testPostApi(setAppointment, noPatientName, 400, "patient field is absent!"),
-            () -> testPostApi(setAppointment, patientSpaces, 400, "patient field is absent!"),
+            () -> testPostApi(setAppointment, noPatientName, 400, "patient field is absent!"),//#6
+            () -> testPostApi(setAppointment, patientSpaces, 400, "patient field is absent!"),//#7
 
-            () -> testPostApi(setAppointment, dateEmpty, 400, "Empty date field!"),
-            () -> testPostApi(setAppointment, noDate, 400, "date field is absent!"),
+            () -> testPostApi(setAppointment, dateEmpty, 400, "Empty date field!"),//#8
+            () -> testPostApi(setAppointment, noDate, 400, "date field is absent!"),//#9
             () -> testGetApi(appointments, 204, "Wrong Status code"),//#10
-            () -> testPostApi(setAppointment, wrongDateFormat, 400, "wrong date format"),
+            () -> testPostApi(setAppointment, wrongDateFormat, 400, "wrong date format"),//#11
 
             //SetAppointsCheck
             () -> testPostSetAppointments(leaWongApp1),//#12
@@ -200,18 +200,18 @@ public class AppointmentBookingToDoctorRestServiceTest extends SpringTest {
 
             () -> testDeleteAppointment(),//#22
 
-            () -> testDeleteAppointmentApi(400, "Wrong Status code"),
-            () -> testGetApi(appointments, 204, "Wrong Status code"),//#23
+            () -> testDeleteAppointmentApi(400, "Wrong Status code"),//#23
+            () -> testGetApi(appointments, 204, "Wrong Status code"),//#24
 
             //deleteAppointemntsCheck
-            () -> testDeleteAppointment(),//#24
+            () -> testDeleteAppointment(),//#25
 
-            () -> testPostSetAppointments(pamelaUppersonApp1),//#25
-            () -> testPostSetAppointments(pamelaUppersonApp2),//#26
-            () -> testPostSetAppointments(pamelaUppersonApp3),//#27
-            () -> testGetAllappointments(),//#28
-            () -> testPostSetAppointments(leaWongApp1),//#29
-            () -> testDeleteAppointment(),//#30
+            () -> testPostSetAppointments(pamelaUppersonApp1),//#26
+            () -> testPostSetAppointments(pamelaUppersonApp2),//#27
+            () -> testPostSetAppointments(pamelaUppersonApp3),//#28
+            () -> testGetAllappointments(),//#29
+            () -> testPostSetAppointments(leaWongApp1),//#30
+            () -> testDeleteAppointment(),//#31
     };
 
 
